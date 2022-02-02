@@ -77,7 +77,7 @@ This hardware uses current sensors in the ground path. That means that the two g
 
 ### Licence ###
 
-This project is released under the  GNU V2 licence.
+The project is released under the GNU General Public License version 3.0
 
 ### Acknowledgement ###
 
