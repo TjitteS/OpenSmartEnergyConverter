@@ -3,7 +3,7 @@ Open-SEC is an open-source digital DC-DC converter that is designed to function 
 
 One of the goals of making this project open-source is to make high-end components more accessible to the many awesome teams that join for the world solar challenge in Australia, and even similar projects that students and companies alike venture in. Hopefully extending the use of smart power conversion. With that, bringing a sustainable future one step closer.
 
-The project is fully developed by TPEE. Visit [tpee.nl](www.tpee.nl) for more information and to get in touch.
+The project is fully developed by TPEE. Visit [tpee.nl](https://www.tpee.nl) for more information and to get in touch.
 
 ![IMPPT](Pictures/MPPT-STRAIGHT.png)
 
