@@ -26,7 +26,7 @@ After uploading the (stable) firmware, using an ST-link with tag connect, the co
 
 In the tool, an acurate lab power supply can be used to calibrate the voltage and current sensors on the converter. After doing this, the acuarcy is much higher and lower tolarance componants can be used. Note that it is not necacery for the converter to work.
 
-![Tool](Pictures\tool-02.png)
+![Tool](Pictures/tool-02.png)
 
 # Hardware #
 
@@ -48,8 +48,8 @@ In the tool, an acurate lab power supply can be used to calibrate the voltage an
 | Tracking Bandwidth	 |	         | 1.8      | kHz  |
 | Operating temperature	 |	         | 0-80     | °C   |
 
-![efficiency](Pictures\Efficiency40V_0-6A_50-70V.png)
-![efficiency](Pictures\Power_Losses_40V_0-6A_50-70V.png)
+![efficiency](Pictures/Efficiency40V_0-6A_50-70V.png)
+![efficiency](Pictures/Power_Losses_40V_0-6A_50-70V.png)
 
 ### Power electronics ###
 
