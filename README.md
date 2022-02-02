@@ -3,7 +3,7 @@ Open-SEC is an open-source digital DC-DC converter that is designed to function 
 
 One of the goals of making this project open-source is to make high-end components more accessible to the many awesome teams that join for the world solar challenge in Australia, and even similar projects that students and companies alike venture in. Hopefully extending the use of smart power conversion. With that, bringing a sustainable future one step closer.
 
-The project is fully developed by TPEE. Visit [tpee.nl](www.tpee.nl) for more information and to get in touch.
+The project is fully developed by TPEE. Visit [tpee.nl](https://www.tpee.nl) for more information and to get in touch.
 
 ![IMPPT](Pictures/MPPT-STRAIGHT.png)
 
@@ -26,7 +26,7 @@ After uploading the (stable) firmware, using an ST-link with tag connect, the co
 
 In the tool, an acurate lab power supply can be used to calibrate the voltage and current sensors on the converter. After doing this, the acuarcy is much higher and lower tolarance componants can be used. Note that it is not necacery for the converter to work.
 
-![Tool](Pictures/tool-02.png)
+![Tool](Pictures/tool02.png)
 
 # Hardware #
 
@@ -77,7 +77,7 @@ This hardware uses current sensors in the ground path. That means that the two g
 
 ### Licence ###
 
-This project is released under the  GNU V2 licence.
+The project is released under the GNU General Public License version 3.0
 
 ### Acknowledgement ###
 
