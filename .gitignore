@@ -50,3 +50,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+/OpenSmartEnergyConverter/.settings/*
+/OpenSmartEnergyConverter/Debug/*
+/OpenSmartEnergyConverter/Simulation/*
