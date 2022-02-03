@@ -20,11 +20,11 @@ The minimum tools required to build an Open-SEC are:
 * A tool for flashing STM32 microcontroller, like ST-link
 * [TAG-Connect](https://www.tag-connect.com/debugger-cable-selection-installation-instructions/st-link-v2) programming cable
 
-The firmware is written in C and is built using the STM32CubeIDE environment. in the environment, two build configurations are defined: Debug and Simulation. the simulation build configuration is used to test firmware. In this build, a simulator is added in instead of the real hardware power electronics. This way it can simulate the control algorithm and other things, without having the risk of destroying the hardware. When enough confidence is built up during testing, the Debug configuration is used to turn the real thing on. Fingers crossed and hope the simulator was accurate enough!
+The firmware is written in C and is built using the STM32CubeIDE environment. In the environment, two build configurations are defined: Debug and Simulation. the simulation build configuration is used to test firmware. In this build, a simulator is added in instead of the real hardware power electronics. This way it can simulate the control algorithm and other things, without having the risk of destroying the hardware. When enough confidence is built up during testing, the Debug configuration is used to turn the real thing on. Fingers crossed!
 
-After uploading the (stable) firmware, using an ST-link with tag connect, the configuration tool can be used to set the hardware settings. Once these are set correctly, the device should be ready for use.
+After uploading the (stable) firmware using an ST-link with tag connect, the configuration tool can be used to set the hardware settings. Once these are set correctly, the device should be ready for use.
 
-In the tool, an acurate lab power supply can be used to calibrate the voltage and current sensors on the converter. After doing this, the acuarcy is much higher and lower tolarance componants can be used. Note that it is not necacery for the converter to work.
+In the tool, an acurate lab power supply can be used to calibrate the voltage and current sensors on the converter. After doing this, the acuarcy is much higher and lower tolarance components can be used. Note that this is not stricktly necessary for the converter to work.
 
 ![Tool](Pictures/tool02.png)
 
@@ -53,7 +53,7 @@ In the tool, an acurate lab power supply can be used to calibrate the voltage an
 
 ### Power electronics ###
 
-The topology is a boost converter with GaN FET switches. Earlier prototypes used [Efficient Power Conversion](https://epc-co.com/epc)'s GaN devices; more specificly the EPC2010C. While this manufacturer has some great publications on how to use GaN FETs and how to model their power losses, I found the devices themselves very sensitive to faults. Events like current sipes or load disconnects could Easley destroy these devices. The switch to [Gan-Systems](https://gansystems.com/) was made when the new design requirements allowed for lower output voltages. Gan-Systems can provide devices that are more easily cooled and integrated on a PCB, but only for 100V or 600V ratings. So far, no GaN-System FET was destroyed in the development process of this project. Which might say something about the reliability of the devices, or the maturity of the converter. 
+The topology is a boost converter with GaN FET switches. Earlier prototypes used [Efficient Power Conversion](https://epc-co.com/epc)'s GaN devices; more specificly the EPC2010C. While this manufacturer has some great publications on how to use GaN FETs and how to model their power losses, I found the devices themselves very sensitive to faults. Events like current spikes or load disconnects could easily destroy these devices. The switch to [Gan-Systems](https://gansystems.com/) was made when the new design requirements allowed for lower output voltages. Gan-Systems can provide devices that are more easily cooled and integrated on a PCB, but only for 100V or 600V ratings. So far, no GaN-System FET was destroyed in the development process of this project. Which might say something about the reliability of the devices, or the maturity of the converter. 
 
 
 ### Measurement and control ###
