@@ -105,7 +105,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="SEC-B80-8A-SIM|SEC-B80-8A|SEC-B175-7A-SIM|SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -217,7 +217,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="SEC-B80-8A-SIM|SEC-B80-8A|SEC-B175-7A-SIM|SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -331,7 +331,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="SEC-B80-8A-SIM|SEC-B80-8A|SEC-B175-7A-SIM|SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -441,7 +441,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="SEC-B80-8A-SIM|SEC-B80-8A|SEC-B175-7A-SIM|SEC-B175-7A|init|SIM_BOOST" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
