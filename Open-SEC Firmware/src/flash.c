@@ -15,7 +15,6 @@
  */
  
 
-
 #include "flash.h"
 
 
@@ -167,31 +166,43 @@ uint16_t modFlashWriteNewAppData(uint32_t offset, uint8_t *data, uint32_t len) {
 	return HAL_OK;
 }
 
-uint16_t modFlashCopyNewAppToMainApp(uint32_t offset, uint8_t *data, uint32_t len) {
+uint16_t modFlashCopyNewAppToMainApp(uint64_t *data, uint32_t len) {
+
+	if (len%8 != 0){
+		return HAL_ERROR;
+	}
+
+	if(len > (APP_BASE - MAIN_BASE)){
+		return HAL_ERROR;
+	}
+
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
+
+	uint64_t* addr = (uint64_t*)MAIN_BASE;
+
+	for (int i = 0; i < len; i += 8){
+		if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, (uint32_t)addr, data[i/8]) != HAL_OK){
+			return HAL_ERROR;
+		}
+		FLASH_WaitForLastOperation(10);
+		addr++;
+	}
+
+	//CLEAR_BIT(FLASH->CR, FLASH_CR_PG);
+	HAL_FLASH_Lock();
+	FLASH_WaitForLastOperation(100);
+	HAL_FLASH_Unlock();
 
 }
 
 void modFlashJumpToBootloader(void) {
-	typedef void (*pFunction)(void);
 
 	__HAL_RCC_USART2_FORCE_RESET();
 	HAL_Delay(5);
 	__HAL_RCC_USART2_RELEASE_RESET();
 	HAL_Delay(5);
-
+	HAL_DeInit();
 	HAL_RCC_DeInit();
-
-	pFunction jump_to_bootloader;
-
-	// Variable that will be loaded with the start address of the application
-	volatile uint32_t* jump_address;
-	const volatile uint32_t* bootloader_address = (volatile uint32_t*)BOOT_BASE;
-
-	// Get jump address from application vector table
-	jump_address = (volatile uint32_t*) bootloader_address[1];
-
-	// Load this address into function pointer
-	jump_to_bootloader = (pFunction) jump_address;
 
 	// Clear pending interrupts
 	SCB->ICSR = SCB_ICSR_PENDSVCLR_Msk;
@@ -201,11 +212,25 @@ void modFlashJumpToBootloader(void) {
 		NVIC->ICER[i] = NVIC->IABR[i];
 	}
 
-	// Set stack pointer
-	__set_MSP((uint32_t) (bootloader_address[0]));
+	typedef void (*pFunction)(void);
+	union
+	{
+		uint32_t ulValue;
+		pFunction pfnPointer;
+	} uResetHandler;
 
-	// Jump to the bootloader
-	jump_to_bootloader();
+	//----------------------------------------------------------------
+	// Jump to user application
+	//
+	//!- calculate jump address: reset handler of new application
+	uResetHandler.ulValue = *(uint32_t volatile *) (BOOT_BASE + 4);
+
+	//!- Initialize user application's Stack Pointer
+	__set_MSP(BOOT_BASE);
+	SCB->VTOR = BOOT_BASE;
+	SysTick->CTRL = 0;
+	//!- jump to application
+	uResetHandler.pfnPointer();
 }
 
 void modFlashJumpToMainApplication(void) {

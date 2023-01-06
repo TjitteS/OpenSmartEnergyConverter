@@ -39,7 +39,7 @@
 uint16_t modFlashEraseNewAppData(uint32_t new_app_size);
 uint16_t modFlashEraseMainAppData(uint32_t new_app_size);
 uint16_t modFlashWriteNewAppData(uint32_t offset, uint8_t *data, uint32_t len);
-uint16_t modFlashCopyNewAppToMainApp(uint32_t offset, uint8_t *data, uint32_t len);
+uint16_t modFlashCopyNewAppToMainApp(uint64_t *data, uint32_t len);
 void     modFlashJumpToBootloader(void);
 void     modFlashJumpToMainApplication(void);
 

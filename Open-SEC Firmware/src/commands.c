@@ -69,8 +69,12 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
 			break;
 		case COMM_JUMP_TO_BOOTLOADER:
-			jumpBootloaderTrue = true;
-			delaytick = HAL_GetTick();
+			main_halt_risky();
+
+			//jumpBootloaderTrue = true;
+			//delaytick = HAL_GetTick();
+
+			modFlashJumpToBootloader();
 			break;
 		case COMM_ERASE_NEW_APP:
 			main_halt_risky();
