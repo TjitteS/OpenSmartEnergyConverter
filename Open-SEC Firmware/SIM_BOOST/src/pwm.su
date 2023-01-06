@@ -1,5 +1,0 @@
-pwm.c:17:6:pwm_init	272	static
-pwm.c:195:6:pwm_setDuty	16	static
-pwm.c:217:13:pwm_disable	8	static
-pwm.c:224:7:pwm_GetControllerPeriod	0	static
-pwm.c:228:6:HRTIM1_Master_IRQHandler	8	static

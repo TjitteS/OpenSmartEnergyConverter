@@ -1,8 +1,0 @@
-core_cm4.h:1933:34:__NVIC_SystemReset	4	static,ignoring_inline_asm
-commands.c:19:6:modCommandsInit	4	static
-commands.c:25:6:modCommandsSetSendFunction	16	static
-commands.c:29:6:modCommandsSendPacket	16	static
-commands.c:35:6:modCommandsProcessPacket	56	static
-commands.c:324:6:modCommandsPrintf	16	static
-commands.c:340:6:modCommandsJumpToMainApplication	8	static
-commands.c:344:6:modCommandsSendSweep	16	static

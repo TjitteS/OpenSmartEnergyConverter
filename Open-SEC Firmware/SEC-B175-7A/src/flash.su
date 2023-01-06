@@ -1,7 +1,0 @@
-core_cm4.h:1933:34:__NVIC_SystemReset	4	static,ignoring_inline_asm
-flash.c:12:10:modFlashEraseNewAppData	56	static,ignoring_inline_asm
-flash.c:60:10:modFlashEraseMainAppData	56	static,ignoring_inline_asm
-flash.c:118:10:modFlashWriteNewAppData	72	static
-flash.c:160:10:modFlashCopyNewAppToMainApp	24	static
-flash.c:164:6:modFlashJumpToBootloader	32	static,ignoring_inline_asm
-flash.c:201:6:modFlashJumpToMainApplication	8	static

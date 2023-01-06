@@ -1,6 +1,0 @@
-flash.c:12:10:modFlashEraseNewAppData	32	static,ignoring_inline_asm
-flash.c:60:10:modFlashEraseMainAppData	32	static,ignoring_inline_asm
-flash.c:118:10:modFlashWriteNewAppData	32	static
-flash.c:160:10:modFlashCopyNewAppToMainApp	0	static
-flash.c:164:6:modFlashJumpToBootloader	8	static,ignoring_inline_asm
-flash.c:201:6:modFlashJumpToMainApplication	0	static,ignoring_inline_asm

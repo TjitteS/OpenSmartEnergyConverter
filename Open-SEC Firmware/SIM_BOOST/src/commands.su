@@ -1,7 +1,0 @@
-commands.c:19:6:modCommandsInit	0	static
-commands.c:25:6:modCommandsSetSendFunction	0	static
-commands.c:29:6:modCommandsSendPacket	8	static
-commands.c:326:6:modCommandsPrintf	16	static
-commands.c:342:6:modCommandsJumpToMainApplication	0	static,ignoring_inline_asm
-commands.c:35:6:modCommandsProcessPacket	48	static
-commands.c:346:6:modCommandsSendSweep	24	static
