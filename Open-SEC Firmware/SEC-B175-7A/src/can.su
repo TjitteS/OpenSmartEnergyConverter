@@ -1,0 +1,13 @@
+can.c:26:10:modGetCanGetID	16	static
+can.c:62:6:modCANinit	72	static
+can.c:155:6:HAL_FDCAN_RxFifo0Callback	16	static
+can.c:169:6:modCanHandleRxMsg	48	static
+can.c:253:6:modCANtask	48	static
+can.c:319:10:modCANGetCANEXID	16	static
+can.c:334:10:modCANGetCANID	16	static
+can.c:349:6:modCANTransmitStandardID	72	static
+can.c:372:6:modCANTransmitExtID	72	static
+can.c:396:6:modCANSendBuffer	64	static
+can.c:468:6:modCANSendPacketWrapper	16	static
+can.c:472:6:FDCAN2_IT0_IRQHandler	8	static
+can.c:478:6:FDCAN2_IT1_IRQHandler	8	static

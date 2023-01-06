@@ -1,0 +1,5 @@
+analog.c:30:6:analog_init	32	static
+analog.c:180:6:ADC1_2_IRQHandler	24	static
+analog.c:199:6:ADC3_IRQHandler	16	static
+analog.c:211:6:ADC4_IRQHandler	24	static
+analog.c:226:6:ADC5_IRQHandler	8	static

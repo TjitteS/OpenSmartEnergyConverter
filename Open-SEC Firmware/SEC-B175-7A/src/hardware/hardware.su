@@ -1,0 +1,4 @@
+hardware.c:4:6:hw_setio_output	40	static
+hardware.c:12:6:hw_setio_input	48	static
+hardware.c:20:6:hw_setio_af	48	static
+hardware.c:30:6:hw_setio_analog	40	static

@@ -1,0 +1,5 @@
+core_cm4.h:1809:22:__NVIC_SetPriority	16	static
+core_cm4.h:2017:26:SysTick_Config	16	static
+delay.c:5:6:modDelayInit	8	static
+delay.c:14:9:modDelayTick1ms	16	static
+delay.c:24:9:modDelayTick100ms	16	static

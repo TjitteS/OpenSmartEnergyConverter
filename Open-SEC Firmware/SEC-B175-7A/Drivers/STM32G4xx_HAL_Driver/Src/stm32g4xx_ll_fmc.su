@@ -1,0 +1,13 @@
+stm32g4xx_ll_fmc.c:183:20:FMC_NORSRAM_Init	32	static
+stm32g4xx_ll_fmc.c:314:19:FMC_NORSRAM_DeInit	24	static
+stm32g4xx_ll_fmc.c:371:19:FMC_NORSRAM_Timing_Init	32	static
+stm32g4xx_ll_fmc.c:421:19:FMC_NORSRAM_Extended_Timing_Init	24	static
+stm32g4xx_ll_fmc.c:487:19:FMC_NORSRAM_WriteOperation_Enable	16	static
+stm32g4xx_ll_fmc.c:505:19:FMC_NORSRAM_WriteOperation_Disable	16	static
+stm32g4xx_ll_fmc.c:577:19:FMC_NAND_Init	16	static
+stm32g4xx_ll_fmc.c:609:19:FMC_NAND_CommonSpace_Timing_Init	24	static
+stm32g4xx_ll_fmc.c:640:19:FMC_NAND_AttributeSpace_Timing_Init	24	static
+stm32g4xx_ll_fmc.c:669:19:FMC_NAND_DeInit	16	static
+stm32g4xx_ll_fmc.c:717:19:FMC_NAND_ECC_Enable	16	static
+stm32g4xx_ll_fmc.c:739:19:FMC_NAND_ECC_Disable	16	static
+stm32g4xx_ll_fmc.c:762:19:FMC_NAND_GetECC	32	static

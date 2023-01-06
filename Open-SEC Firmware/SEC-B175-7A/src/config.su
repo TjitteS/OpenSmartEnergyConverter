@@ -1,0 +1,7 @@
+config.c:11:14:modConfigInit	16	static
+config.c:29:6:modConfigStoreConfig	8	static,ignoring_inline_asm
+config.c:37:6:modConfigLoadConfig	8	static
+config.c:44:6:modConfigSetConfig	16	static
+config.c:50:6:modConfigStoreAndLoadDefaultConfig	8	static
+config.c:55:6:modConfigStoreDefaultConfig	4	static
+config.c:61:6:modConfigLoadDefaultConfig	12	static

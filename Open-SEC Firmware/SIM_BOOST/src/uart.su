@@ -1,0 +1,5 @@
+uart.c:93:6:modUARTSendPacketWrapper	8	static
+uart.c:97:6:modUARTProcessPacket	16	static
+uart.c:102:6:modUARTSendPacket	8	static
+uart.c:18:6:modUARTInit	24	static
+uart.c:56:6:modUARTTask	16	static

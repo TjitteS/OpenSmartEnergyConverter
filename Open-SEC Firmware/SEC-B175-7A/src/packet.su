@@ -1,0 +1,4 @@
+packet.c:39:6:libPacketInit	24	static
+packet.c:45:6:libPacketSendPacket	40	static
+packet.c:77:6:libPacketTimerFunc	16	static
+packet.c:87:6:libPacketProcessByte	24	static

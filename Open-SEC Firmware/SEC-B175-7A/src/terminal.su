@@ -1,0 +1,3 @@
+core_cm4.h:1933:34:__NVIC_SystemReset	4	static,ignoring_inline_asm
+terminal.c:35:6:terminal_process_string	296	static
+terminal.c:159:6:terminal_register_command_callback	32	static

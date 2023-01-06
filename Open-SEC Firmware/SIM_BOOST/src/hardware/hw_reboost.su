@@ -1,0 +1,2 @@
+hw_reboost.c:83:6:hw_io_init	16	static
+hw_reboost.c:127:6:hw_adc_init	64	static
