@@ -16,10 +16,15 @@ modConfig_t* modConfigInit(void) {
 		return &config;
 	}
 	else{
-		if(modConfigStoreAndLoadDefaultConfig() == false){
+		//Load default values. Also load default calibration.]
+		memcpy(&config, &defaultConvig, sizeof(modConfig_t));
+
+		//Save
+		if(modConfigStoreConfig() == false){
 			return &config;
 		}
 		else {
+			//Complete failure...
 			return (modConfig_t*)0x0;
 		}
 	}
