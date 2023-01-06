@@ -35,26 +35,26 @@ modConfig_t defaultConvig = {
 				"V221201",
 				"00000000",
 				false,
-				1.0,//float InputCurrentGain;// A/V
-				0,	//float InputCurrentOffset;//mA
-				1,	//float InputVoltageGain;// V/V
-				0,	//float InputVoltageOffset;//mV
-				1,	//float OutputCurrentGain;//  A/V
-				0,	//float OutputCurrentOffset;//mA
-				1,	//float OutputVoltageGain;// V/V
-				0,	//float OutputVoltageOffset;//mV
-				4000.0f,	//float Temperature_B;//4000.0f
+				4.82,//float InputCurrentGain;// A/V
+				-200.0,	//float InputCurrentOffset;//mA
+				67.7,	//float InputVoltageGain;// V/V
+				3100,	//float InputVoltageOffset;//mV
+				-4.82,	//float OutputCurrentGain;//  A/V
+				-200.0,	//float OutputCurrentOffset;//mA
+				67.7,	//float OutputVoltageGain;// V/V
+				3100,	//float OutputVoltageOffset;//mV
+				4480.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
-				1.2f,	//float ADC_delay;//0.1us
-				100,	//float SwitchingFrequency;
+				0.8f,	//float ADC_delay;//0.1us
+				42,	//float SwitchingFrequency;
 				35,	//float ControllerFrequency;
-				30,	//float DeadTimeRising;
-				30,	//float DedtimeFalling;
-				50,	//float L;
-				220,	//float Clow;
-				440,	//float Chigh;
-				30,	//float RLint;
+				67,	//float DeadTimeRising;
+				67,	//float DedtimeFalling;
+				120e-6,	//float L, H
+				220e-6,	//float Clow, F
+				440e-6,	//float Chigh; F
+				30e-6,	//float RLint;
 				1,	//float Q; //1
 				0.4,	//float Klim;
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
@@ -65,11 +65,11 @@ modConfig_t defaultConvig = {
 				175.0e3f,//float LowSideVoltageLimitSoft;		// mV
 				7.0e3f, //float HighSideCurrentLimitSoft;		// mA
 				7.0e3f, //float LowSideCurrentMaxLimitSoft;  	//Minimum input current
-				10.0f, //float LowSideCurrentMinLimitSoft;	//Minimum input current
-				10.0f,//float PhaseHighSideEnableCurrent;	// mA
+				12.0f, //float LowSideCurrentMinLimitSoft;	//Minimum input current
+				12.0f,//float PhaseHighSideEnableCurrent;	// mA
 				false,//bool outputEnable;
 		},{//modMPPTsettings_t mpptsettings;
-				100.0f, //float PO_Stepsize; mV
+				500.0f, //float PO_Stepsize; mV
 				50, //uint32_t PO_Timestep; ms
 				0, //float PO_maxgradient;
 				0, //float jump_RangeMax;
@@ -79,7 +79,7 @@ modConfig_t defaultConvig = {
 		},{//modCanSettings_t cansettings;
 				250,//int baudrate; kbps
 				0.75,//float samplepoint;
-				56,//uint16_t generalCanId;
+				32,//uint16_t generalCanId;
 		},
 };
 

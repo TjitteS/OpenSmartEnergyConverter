@@ -28,55 +28,55 @@ OPAMP_HandleTypeDef hopamp3;
 
 modConfig_t defaultConvig = {
 		{//CalibrationData_t	calData;
-				"SEC-B175-7A",
-				"V221201",
+				"SEC-B80-8A",
+				"V0.2.1",
 				"00000000",
 				false,
-				1.0,//float InputCurrentGain;// A/V
-				0,	//float InputCurrentOffset;//mA
-				1,	//float InputVoltageGain;// V/V
-				0,	//float InputVoltageOffset;//mV
-				1,	//float OutputCurrentGain;//  A/V
-				0,	//float OutputCurrentOffset;//mA
-				1,	//float OutputVoltageGain;// V/V
-				0,	//float OutputVoltageOffset;//mV
-				4000.0f,	//float Temperature_B;//4000.0f
+				-4.3f,//float InputCurrentGain;// A/V
+				0.02f,	//float InputCurrentOffset;//mA
+				31.0f,	//float InputVoltageGain;// V/V
+				-0.451f,	//float InputVoltageOffset;//mV
+				4.3f,	//float OutputCurrentGain;//  A/V
+				0.02f,	//float OutputCurrentOffset;//mA
+				31.0f,	//float OutputVoltageGain;// V/V
+				-0.451,	//float OutputVoltageOffset;//mV
+				4100.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
-				1.2f,	//float ADC_delay;//0.1us
+				0.8f,	//float ADC_delay;//0.1us
 				100,	//float SwitchingFrequency;
 				35,	//float ControllerFrequency;
-				30,	//float DeadTimeRising;
-				30,	//float DedtimeFalling;
-				50,	//float L;
-				220,	//float Clow;
-				440,	//float Chigh;
-				30,	//float RLint;
-				1,	//float Q; //1
-				0.4,	//float Klim;
+				40,	//float DeadTimeRising;
+				40,	//float DedtimeFalling;
+				68e-6f,	//float L;
+				100e-6f,	//float Clow;
+				600e-6f,	//float Chigh;
+				30e-3f,	//float RLint;
+				1.0,	//float Q; //1
+				0.5,	//float Klim;
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
 				0x5c3d,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
 				0.999f, //float meterfilterCoeficient;
 				80.0e3f, //float HighSideVoltageLimitSoft;		// mV
 				80.0e3f,//float LowSideVoltageLimitSoft;		// mV
-				7.0e3f, //float HighSideCurrentLimitSoft;		// mA
-				7.0e3f, //float LowSideCurrentMaxLimitSoft;  	//Minimum input current
+				8.0e3f, //float HighSideCurrentLimitSoft;		// mA
+				8.0e3f, //float LowSideCurrentMaxLimitSoft;  	//Minimum input current
 				10.0f, //float LowSideCurrentMinLimitSoft;	//Minimum input current
 				10.0f,//float PhaseHighSideEnableCurrent;	// mA
 				true,//bool outputEnable;
 		},{//modMPPTsettings_t mpptsettings;
-				100.0f, //float PO_Stepsize; mV
-				50, //uint32_t PO_Timestep; ms
-				0, //float PO_maxgradient;
+				200.0f, //float PO_Stepsize; mV
+				30, //uint32_t PO_Timestep; ms
+				10, //float PO_maxgradient;
 				0, //float jump_RangeMax;
 				0, //float jump_RangeMin;
-				0, //float jump_PowerThreshold;
+				5, //float jump_PowerThreshold;
 				0, //int jump_Rate;
 		},{//modCanSettings_t cansettings;
 				250,//int baudrate; kbps
 				0.75,//float samplepoint;
-				56,//uint16_t generalCanId;
+				32,//uint16_t generalCanId;
 		},
 };
 
