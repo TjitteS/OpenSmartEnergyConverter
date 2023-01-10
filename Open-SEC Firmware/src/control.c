@@ -70,8 +70,13 @@ void control_init(const ConverterSettings_t* s, const CalibrationData_t * c) {
 	HAL_Delay(100);
 }
 
+float t;
 
 void control_controlloop(ConverterPhase_t* p){
+
+	bool TemperatureLimited = false;
+	bool OutputCurrentLimited = false;
+	bool OutputVoltageLimited = false;
 
 	//Reset the mode variable.
 	p->mode = PhaseMode_CIV;
@@ -102,30 +107,35 @@ void control_controlloop(ConverterPhase_t* p){
 
 	Ilim = p->Iindlim;
 
+
+	//Temperature de-rating
+	if (p->TemperatureHeatsink > settings.TemperatureLimitStart){
+		t = (p->TemperatureHeatsink - settings.TemperatureLimitStart)/(settings.TemperatureLimitEnd - settings.TemperatureLimitStart);
+		Ilim = p->Iindlim * (1 - t);
+		if (Ilim < 0){
+			Ilim = 0;
+		}
+		TemperatureLimited = true;
+	}
+
 	//Output voltage limit
 	float Ioutlim = 0.8f * cal.Klim * cal.Chigh*(p->Vhighlim - p->Vhigh)/(Ts) + p->Ihigh;
 
-	bool ioutlimited = false;
 	if(Ioutlim > p->Ihighlim){
 		Ioutlim =  p->Ihighlim;
-		ioutlimited=true;
+		OutputCurrentLimited = true;
 	}
 
 	float Ilimmaxvout = Ioutlim/(1.0f-p->dutycycle);
 
-	//Limit the input current to hifgher than 0, to prefent current undershoot.
-
+	//Limit the input current to higher than 0, to prevent current under-shoot.
 	if(Ilimmaxvout < 0.0){
 		Ilimmaxvout = 0.0f;
 	}
 
 	if(Ilim > Ilimmaxvout){
 		Ilim = Ilimmaxvout;
-		if(ioutlimited){
-			p->mode = PhaseMode_COC;
-		}else{
-			p->mode = PhaseMode_COV;
-		}
+		OutputVoltageLimited = true;
 	}
 
 	p->Ilimvout = Ilim / 1000.0f;
@@ -137,7 +147,7 @@ void control_controlloop(ConverterPhase_t* p){
 	float Vnlimup = +p->Vlow + (cal.RLint * p->Iind) - (cal.Klim*cal.L*(settings.LowSideCurrentMinLimitSoft - p->Iind)/Ts);
 	float Vnlimlo = +p->Vlow + (cal.RLint * p->Iind) - (cal.Klim*cal.L*(Ilim - p->Iind)/Ts );
 
-
+	//Unlimited controller
 	Vn = Vnn + (p->Iind*ControllerR);
 
 	//Limit Vnn to limit phase current
@@ -146,14 +156,24 @@ void control_controlloop(ConverterPhase_t* p){
 		p->mode = PhaseMode_MinInputCurrent;
 	}
 
-	if(Vn < Vnlimlo){
+	if(Vn < Vnlimlo) {
 		Vn = Vnlimlo;
-		if(p->mode == PhaseMode_CIV)
-			p->mode = PhaseMode_CIC;
-	}else{
-		if(p->mode != PhaseMode_MinInputCurrent)
-			p->mode = PhaseMode_CIV;
+		p->mode = PhaseMode_CIC;
 	}
+
+	//Select correct operating mode
+
+	if(p->mode == PhaseMode_CIC){
+		if(TemperatureLimited){
+			p->mode = PhaseMode_TD;
+		}
+
+		if(OutputVoltageLimited){
+			if(OutputCurrentLimited)p->mode = PhaseMode_COC;
+			else p->mode = PhaseMode_COV;
+		}
+	}
+
 
 #elif defined(HW_TOPOLOGY_BUCK)
 
@@ -332,7 +352,6 @@ bool control_check_parameters(ConverterSettings_t* s, CalibrationData_t * c){
 	if(c->DeadtimeFalling > 188.0)error = true;
 	if(c->DeadtimeFalling < 5)error = true;
 
-
 	return error;
 }
 
@@ -452,8 +471,8 @@ void control_convert_ihs(uint32_t raw){
 
 void convertAdc5(uint32_t* data){
 	EMA(phase.TemperatureMCU, __LL_ADC_CALC_TEMPERATURE((uint32_t)HW_ADCREF,data[0],LL_ADC_RESOLUTION_12B), TEMP_FORGETING_FACTOR);
-	EMA(phase.TemperatureHeatsink, convertTemperature(data[1]), TEMP_FORGETING_FACTOR);
-	EMA(phase.TemperatureAmbient, convertTemperature(data[2]), TEMP_FORGETING_FACTOR);
+	EMA(phase.TemperatureHeatsink, convertTemperature(data[2]), TEMP_FORGETING_FACTOR);
+	EMA(phase.TemperatureAmbient, convertTemperature(data[1]), TEMP_FORGETING_FACTOR);
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc){

@@ -69,3 +69,12 @@ void modConfigLoadDefaultConfig() {
 	memcpy(&config.settings, &defaultConvig.settings, sizeof(ConverterSettings_t));
 }
 
+void modConfigLimitSettings(modConfig_t* c){
+	if(c->settings.TemperatureLimitEnd > HW_TEMP_LIM){
+		c->settings.TemperatureLimitEnd = HW_TEMP_LIM;
+	}
+	if(c->settings.TemperatureLimitStart > c->settings.TemperatureLimitEnd){
+		c->settings.TemperatureLimitStart = c->settings.TemperatureLimitEnd;
+	}
+}
+

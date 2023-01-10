@@ -64,6 +64,8 @@ modConfig_t defaultConvig = {
 				8.0e3f, //float LowSideCurrentMaxLimitSoft;  	//Minimum input current
 				10.0f, //float LowSideCurrentMinLimitSoft;	//Minimum input current
 				10.0f,//float PhaseHighSideEnableCurrent;	// mA
+				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius
+				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
 				true,//bool outputEnable;
 		},{//modMPPTsettings_t mpptsettings;
 				200.0f, //float PO_Stepsize; mV

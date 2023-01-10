@@ -39,6 +39,8 @@
 #endif
 #endif
 
+#define HW_TEMP_LIM 85.0f
+
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;

@@ -104,8 +104,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			buffer_append_float32_auto(modCommandsSendBuffer, meter.Ilow, &ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, meter.Vlow, &ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, meter.Vhigh, &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.TemperatureAmbient, &ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, meter.TemperatureHeatsink, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter.TemperatureAmbient, &ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, meter.Eff, &ind);
 			buffer_append_uint8(modCommandsSendBuffer, phase.mode,  &ind);
 			buffer_append_uint8(modCommandsSendBuffer, phase.fault,  &ind);
@@ -116,15 +116,17 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			ind = 0;
 			//Before writing the data, disable the outptut.
 			main_halt_risky();
+			acktiveConfig->settings.meterfilterCoeficient = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.HighSideVoltageLimitSoft    = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.LowSideVoltageLimitSoft     = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.HighSideCurrentLimitSoft    = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.LowSideCurrentMaxLimitSoft  = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.PhaseHighSideEnableCurrent  = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.LowSideCurrentMinLimitSoft  = 1.0e3f * buffer_get_float32_auto(data,&ind);
-
+			acktiveConfig->settings.TemperatureLimitStart		= buffer_get_float32_auto(data,&ind);
+			acktiveConfig->settings.TemperatureLimitEnd			= buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.outputEnable = buffer_get_int8(data,&ind);
-			acktiveConfig->settings.meterfilterCoeficient = buffer_get_float32_auto(data,&ind);
+
 			acktiveConfig->mpptsettings.PO_Stepsize = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.PO_Timestep = (uint32_t)buffer_get_uint16(data, &ind);
 
@@ -138,9 +140,12 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			acktiveConfig->cansettings.samplepoint		= buffer_get_float32_auto(data,&ind)/100.0;
 			acktiveConfig->cansettings.generalCanId		= buffer_get_uint16(data, &ind);
 
+			modConfigLimitSettings(acktiveConfig);
 			ind = 0;
 			modCommandsSendBuffer[ind++] = packet_id;
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
+
+
 			main_init_after_config();
 
 			break;
@@ -158,15 +163,19 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			modCommandsSendBuffer[ind++] = packet_id;
 
 			//settings
+			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.meterfilterCoeficient           ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.HighSideVoltageLimitSoft    ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideVoltageLimitSoft     ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.HighSideCurrentLimitSoft    ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideCurrentMaxLimitSoft  ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.PhaseHighSideEnableCurrent ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideCurrentMinLimitSoft ,&ind);
-
+			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.TemperatureLimitStart ,&ind);
+			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.TemperatureLimitEnd ,&ind);
 			buffer_append_int8		(modCommandsSendBuffer,acktiveConfig->settings.outputEnable          	 ,&ind);
-			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.meterfilterCoeficient           ,&ind);
+
+
+
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Stepsize,&ind);
 			buffer_append_uint16	(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Timestep, &ind);
 

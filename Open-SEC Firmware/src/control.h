@@ -16,6 +16,7 @@ typedef enum PhaseMode_t{
 	PhaseMode_MinInputCurrent,
 	PhaseMode_COV,
 	PhaseMode_COC,
+	PhaseMode_TD, //Temperature De-rating
 	PhaseMode_Fault,
 }PhaseMode_t;
 
@@ -131,6 +132,10 @@ typedef struct ConverterSettings_t {
 	float LowSideCurrentMaxLimitSoft;  	//Minimum input current
 	float LowSideCurrentMinLimitSoft;	//Minimum input current
 	float PhaseHighSideEnableCurrent;	// mA
+
+	float TemperatureLimitStart;
+	float TemperatureLimitEnd;
+
 	bool outputEnable;
 }ConverterSettings_t;
 
