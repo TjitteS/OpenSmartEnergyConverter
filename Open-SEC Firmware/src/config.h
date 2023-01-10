@@ -35,5 +35,6 @@ bool modConfigStoreConfig(void);
 bool modConfigLoadConfig(void);
 bool modConfigStoreDefaultConfig(void);
 void modConfigLoadDefaultConfig(void);
+void modConfigLimitSettings(modConfig_t* c);
 
 #endif

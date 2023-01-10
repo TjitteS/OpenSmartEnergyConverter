@@ -74,8 +74,6 @@ modConfig_t defaultConvig = {
 				200.0f, //float PO_Stepsize; mV
 				50, //uint32_t PO_Timestep; ms
 				0.1,  // float P&O Step Size Gain;
-				0, //float jump_RangeMax;
-				0, //float jump_RangeMin;
 				0, //float jump_PowerThreshold;
 				0, //int jump_Rate;
 		},{//modCanSettings_t cansettings;

@@ -54,8 +54,6 @@ typedef struct{
 	float PO_Stepsize;
 	uint32_t PO_Timestep;
 	float PO_StepSizeGain;
-	float jump_RangeMax;
-	float jump_RangeMin;
 	float jump_PowerThreshold;
 	int jump_Rate;
 }modMPPTsettings_t;

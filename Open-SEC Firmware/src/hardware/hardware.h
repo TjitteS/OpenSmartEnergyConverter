@@ -40,6 +40,8 @@
 #endif
 
 #define HW_TEMP_LIM 85.0f
+#define HW_MIN_SETPOINT 5000.0f
+
 
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;

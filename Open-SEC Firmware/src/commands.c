@@ -132,8 +132,6 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 
 			acktiveConfig->mpptsettings.PO_StepSizeGain = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.jump_PowerThreshold = buffer_get_float32_auto(data,&ind);
-			acktiveConfig->mpptsettings.jump_RangeMax = 1.0e3f * buffer_get_float32_auto(data,&ind);
-			acktiveConfig->mpptsettings.jump_RangeMin = 1.0e3f * buffer_get_float32_auto(data,&ind);
 
 			acktiveConfig->mpptsettings.jump_Rate 		= buffer_get_uint16(data, &ind);
 			acktiveConfig->cansettings.baudrate			= buffer_get_uint16(data, &ind);
@@ -181,8 +179,6 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_StepSizeGain, &ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.jump_PowerThreshold,&ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, 1.0e-3f*acktiveConfig->mpptsettings.jump_RangeMax,&ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, 1.0e-3f*acktiveConfig->mpptsettings.jump_RangeMin,&ind);
 
 			buffer_append_uint16(modCommandsSendBuffer, acktiveConfig->mpptsettings.jump_Rate,&ind);
 			buffer_append_uint16(modCommandsSendBuffer,  acktiveConfig->cansettings.baudrate,&ind);

@@ -24,6 +24,8 @@ uint32_t lastsweep;
 
 
 extern UART_HandleTypeDef huart1;
+extern ConverterSettings_t settings;
+
 
 modMPPTsettings_t * modMpptsettings;
 modMPPTstate_t currentmode;
@@ -131,7 +133,6 @@ void modMPPTPerturbAndObserve(){
 
 	float dv = v - pv;
 	float dp = p - pp;
-	float jump = 0;
 
 	float dpdv = 0;
 	if(dv != 0){
@@ -154,18 +155,13 @@ void modMPPTPerturbAndObserve(){
 	}
 
 	//Start P&O right away.
-	//If oscillationthreshold is zero, do  not ever jump.
+	//If jump rate is zero, do  not ever jump.
 	if ((oscillationnumber > modMpptsettings->jump_Rate) && (modMpptsettings->jump_Rate != 0)){
-		changedStepSize  =  Vsp;
-		//Deciding the jump points (THIS EQUATION is GENERALIZED)
-		//jump = ((float)(rand()%((int)(0.7*(max-5))))) + ((max-5.0f)*0.3f);
-		jump = randomf(modMpptsettings->jump_RangeMin, modMpptsettings->jump_RangeMax);
 
-		//save the current positon, so we can jump back afterwards.
+		//save the current position, so we can jump back afterwards.
 		changedStepSize  =  Vsp;
 
-		//Vsp = jump*1000.0f;
-		Vsp = jump;
+		Vsp = randomf(HW_MIN_SETPOINT, settings.LowSideVoltageLimitSoft);
 
 		oscillationnumber = 0;
 		justjumped = true;
