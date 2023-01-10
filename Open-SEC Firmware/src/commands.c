@@ -130,7 +130,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			acktiveConfig->mpptsettings.PO_Stepsize = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.PO_Timestep = (uint32_t)buffer_get_uint16(data, &ind);
 
-			acktiveConfig->mpptsettings.PO_maxgradient = buffer_get_float32_auto(data,&ind);
+			acktiveConfig->mpptsettings.PO_StepSizeGain = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.jump_PowerThreshold = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.jump_RangeMax = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.jump_RangeMin = 1.0e3f * buffer_get_float32_auto(data,&ind);
@@ -179,7 +179,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Stepsize,&ind);
 			buffer_append_uint16	(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Timestep, &ind);
 
-			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_maxgradient,&ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_StepSizeGain, &ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.jump_PowerThreshold,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, 1.0e-3f*acktiveConfig->mpptsettings.jump_RangeMax,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, 1.0e-3f*acktiveConfig->mpptsettings.jump_RangeMin,&ind);

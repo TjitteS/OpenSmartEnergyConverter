@@ -172,8 +172,8 @@ void modMPPTPerturbAndObserve(){
 	}
 	else {
 		float stepsize;
-		if(modMpptsettings->PO_maxgradient > 0.0f){
-			stepsize = modMpptsettings->PO_Stepsize * (1.0f+fabsf(dpdv/modMpptsettings->PO_maxgradient));
+		if(modMpptsettings->PO_StepSizeGain > 0.0f){
+			stepsize = modMpptsettings->PO_Stepsize * (1.0f+(fabsf(dpdv)*modMpptsettings->PO_StepSizeGain));
 		}else{
 			stepsize = modMpptsettings->PO_Stepsize;
 		}

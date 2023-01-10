@@ -53,7 +53,7 @@ typedef enum{
 typedef struct{
 	float PO_Stepsize;
 	uint32_t PO_Timestep;
-	float PO_maxgradient;
+	float PO_StepSizeGain;
 	float jump_RangeMax;
 	float jump_RangeMin;
 	float jump_PowerThreshold;
