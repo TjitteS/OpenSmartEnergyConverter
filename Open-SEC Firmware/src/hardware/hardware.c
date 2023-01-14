@@ -44,7 +44,7 @@ void hw_setio_af(GPIO_TypeDef * port, uint32_t pin, uint32_t af){
 
 void hw_setio_analog(GPIO_TypeDef * port, uint32_t pin){
 	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.Pin = IHS__Pin|IHS_A3_Pin;
+	GPIO_InitStruct.Pin = pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(port, &GPIO_InitStruct);

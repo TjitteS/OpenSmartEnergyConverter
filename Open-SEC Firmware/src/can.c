@@ -65,6 +65,8 @@ void modCANinit(modCanSettings_t *s) {
 	//modCanSettingsLocal.busSpeed = 500;
 	//modCanSettingsLocal.samplepoint = 0.75;
 
+	__HAL_RCC_FDCAN_CLK_ENABLE();
+
 	canid = modGetCanGetID();
 
 	int pre = 0;
@@ -95,7 +97,7 @@ void modCANinit(modCanSettings_t *s) {
 	hfdcan2.Init.ClockDivider = FDCAN_CLOCK_DIV1;
 	hfdcan2.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
 	hfdcan2.Init.Mode = FDCAN_MODE_NORMAL;
-	hfdcan2.Init.AutoRetransmission = ENABLE;
+	hfdcan2.Init.AutoRetransmission = DISABLE;
 	hfdcan2.Init.TransmitPause = DISABLE;
 	hfdcan2.Init.ProtocolException = DISABLE;
 	hfdcan2.Init.NominalPrescaler = (uint32_t) pre;
@@ -147,6 +149,20 @@ void modCANinit(modCanSettings_t *s) {
 			0) != HAL_OK) {
 		Error_Handler();
 	}
+
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Alternate = GPIO_AF9_FDCAN2;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	HAL_NVIC_SetPriority(FDCAN2_IT0_IRQn, 2, 0);
+	HAL_NVIC_EnableIRQ(FDCAN2_IT0_IRQn);
+	HAL_NVIC_SetPriority(FDCAN2_IT1_IRQn, 2, 0);
+	HAL_NVIC_EnableIRQ(FDCAN2_IT1_IRQn);
+
 
 	HAL_FDCAN_Start(&hfdcan2);
 
@@ -250,20 +266,31 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 	}
 }
 
+
+uint32_t lastAcktion;
+
 void modCANtask(void) {
+
+	if (HAL_GetTick() < (lastAcktion + 50)){
+		LED3_GPIO_Port->BSRR = LED3_Pin;
+	}else{
+		LED3_GPIO_Port->BRR = LED3_Pin;
+	}
+
 	if (HAL_FDCAN_GetError(&hfdcan2)) {
 
 	}
 
-	LED3_GPIO_Port->BRR = LED3_Pin;
+
 
 	uint32_t tnow = HAL_GetTick();
 	dt = tnow - lasttick;
 	lasttick = tnow;
 
-	if (tx_available) {
+	if(tx_available) {
 		if (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2)) {
-			LED3_GPIO_Port->BSRR = LED3_Pin;
+			lastAcktion = HAL_GetTick();
+
 			HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &(TXQue[tx_rd].txmsg),
 					TXQue[tx_rd].data);
 			tx_rd++;
@@ -273,17 +300,17 @@ void modCANtask(void) {
 			}
 		}
 	}
-
-	if (rx_available) {
+	else if (rx_available) {
 		do {
-			LED3_GPIO_Port->BSRR = LED3_Pin;
+			lastAcktion = HAL_GetTick();
+
 			modCanHandleRxMsg(&RXQue[rx_rd]);
 			rx_rd++;
 			rx_available--;
 			if (rx_rd >= MODCAN_TXBUFFER_SIZE) {
 				rx_rd = 0;
 			}
-		} while (rx_available >= (MODCAN_TXBUFFER_SIZE - 10));
+		} while(rx_available);//while (rx_available >= (MODCAN_TXBUFFER_SIZE - 10));
 	}
 
 	if (modDelayTick1ms(&lasttick_canmsg_stat, 1000)) {
@@ -480,4 +507,6 @@ void FDCAN2_IT1_IRQHandler(void) {
 	HAL_FDCAN_IRQHandler(&hfdcan2);
 
 }
+
+
 

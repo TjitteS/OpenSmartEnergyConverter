@@ -51,8 +51,8 @@
 //Limits
 #define HW_LIMIT_HS_VOLTAGE_HARD 180000
 #define HW_LIMIT_LS_VOLTAGE_HARD 180000
-#define HW_LIMIT_HS_CURRENT_HARD 10000
-#define HW_LIMIT_LS_CURRENT_HARD 10000
+#define HW_LIMIT_HS_CURRENT_HARD 12000
+#define HW_LIMIT_LS_CURRENT_HARD 12000
 
 //Pinout
 #define LED0_Pin 			GPIO_PIN_15
@@ -63,6 +63,7 @@
 #define LED2_GPIO_Port 		GPIOC
 #define LED3_Pin 			GPIO_PIN_9
 #define LED3_GPIO_Port 		GPIOB
+
 #define ID0_Pin 			GPIO_PIN_4
 #define ID0_GPIO_Port 		GPIOC
 #define ID1_Pin 			GPIO_PIN_0
@@ -71,6 +72,7 @@
 #define ID2_GPIO_Port 		GPIOB
 #define ID3_Pin 			GPIO_PIN_2
 #define ID3_GPIO_Port 		GPIOB
+
 #define VLS_Pin 			GPIO_PIN_1
 #define VLS_GPIO_Port 		GPIOA
 #define IHS__Pin 			GPIO_PIN_2

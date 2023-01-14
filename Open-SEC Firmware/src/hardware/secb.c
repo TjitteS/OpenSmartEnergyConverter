@@ -90,6 +90,11 @@ void hw_io_init(){
 	hw_setio_af(GPIOA, P2_PWM_LS_Pin, GPIO_AF13_HRTIM1);
 	hw_setio_af(GPIOA, P2_EN_HS_Pin,  GPIO_AF13_HRTIM1);
 
+	//CAN
+	hw_setio_af(GPIOB,  GPIO_PIN_5,  GPIO_AF9_FDCAN2);
+	hw_setio_af(GPIOB, GPIO_PIN_6, GPIO_AF9_FDCAN2);
+
+
 	//UART
 	hw_setio_af(GPIOC, GPIO_PIN_10, GPIO_AF7_USART3);
 	hw_setio_af(GPIOC, GPIO_PIN_11, GPIO_AF7_USART3);
