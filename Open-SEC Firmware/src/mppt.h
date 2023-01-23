@@ -26,7 +26,7 @@
 #include "control.h"
 #include "main.h"
 
-#define MPPT_SWEEP_SIZE 128
+#define MPPT_SWEEP_SIZE (128/4)
 float mppt_vs[MPPT_SWEEP_SIZE];
 float mppt_is[MPPT_SWEEP_SIZE];
 
