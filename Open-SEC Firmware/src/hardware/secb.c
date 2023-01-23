@@ -46,34 +46,34 @@ modConfig_t defaultConvig = {
 				4480.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
-				0.8f,	//float ADC_delay;//0.1us
-				42,	//float SwitchingFrequency;
-				35,	//float ControllerFrequency;
-				67,	//float DeadTimeRising;
-				67,	//float DedtimeFalling;
-				120e-6,	//float L, H
-				220e-6,	//float Clow, F
-				440e-6,	//float Chigh; F
-				30e-6,	//float RLint;
-				1,	//float Q; //1
-				0.4,	//float Klim;
+//				0.8f,	//float ADC_delay;//0.1us
+//				42,	//float SwitchingFrequency;
+//				35,	//float ControllerFrequency;
+//				67,	//float DeadTimeRising;
+//				67,	//float DedtimeFalling;
+//				120e-6,	//float L, H
+//				220e-6,	//float Clow, F
+//				440e-6,	//float Chigh; F
+//				30e-6,	//float RLint;
+//				1,	//float Q; //1
+//				0.4,	//float Klim;
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0x5c3d,	//uint16_t calcrc; //Checksum
+				0xac61,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
-				0.99f, 	// float meterfilterCoeficient;
-				175.0e3f, 	// float HighSideVoltageLimitSoft;	 mV
-				175.0e3f,	// float LowSideVoltageLimitSoft;	 mV
+				0.9f, 	// float meterfilterCoeficient;
+				147.0e3f, 	// float HighSideVoltageLimitSoft;	 mV
+				95.0e3f,	// float LowSideVoltageLimitSoft;	 mV
 				7.0e3f, 	// float HighSideCurrentLimitSoft;	 mA
 				7.0e3f, 	// float LowSideCurrentMaxLimitSoft, mA
-				12.0f, 		// float LowSideCurrentMinLimitSoft, mA
-				12.0f,		// float PhaseHighSideEnableCurrent, mA
+				10.0f, 		// float LowSideCurrentMinLimitSoft, mA
+				10.0f,		// float PhaseHighSideEnableCurrent, mA
 				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius
 				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
 				false,//bool outputEnable;
 		},{//modMPPTsettings_t mpptsettings;
-				200.0f, //float PO_Stepsize; mV
-				50, //uint32_t PO_Timestep; ms
-				0.1,  // float P&O Step Size Gain;
+				100.0f, //float PO_Stepsize; mV
+				20, //uint32_t PO_Timestep; ms
+				3.0f,  // float P&O Step Size Gain;
 				0, //float jump_PowerThreshold;
 				0, //int jump_Rate;
 		},{//modCanSettings_t cansettings;

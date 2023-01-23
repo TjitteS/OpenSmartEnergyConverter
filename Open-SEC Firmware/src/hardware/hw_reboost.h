@@ -22,10 +22,8 @@
 #define HW_NAME "Reboost"
 #endif
 
-#ifndef SIMULATION
 #define HW_TOPOLOGY_BOOST
-//#define HW_TOPOLOGY_BUCK
-#endif
+
 
 #define HW_HAS_IOUT_SENSOR
 #define HW_HAS_UART
@@ -40,6 +38,19 @@
 #define HW_LIMIT_HS_CURRENT_HARD 10000
 #define HW_LIMIT_LS_CURRENT_HARD 10000
 
+#define HW_ADC_DELAY           0.8f
+#define HW_SWITCHINGFREQUENCY  100
+#define HW_CONTROLLERFREQUENCY 35
+#define HW_DEADTIMERISING      40
+#define HW_DEADTIMEFALLING     40
+#define HW_L                   68e-6f
+#define HW_CLOW                100e-6f
+#define HW_CHIGH               600e-6f
+#define HW_RLINT               30e-3f
+#define HW_Q                   1.0
+#define HW_KLIM                0.5
+
+
 #define HW_TIMERINDEX 			HRTIM_TIMERINDEX_TIMER_B
 #define HW_HRTIM_ADCTRIGGER 	HRTIM_ADCTRIGGEREVENT13_TIMERB_CMP3
 
@@ -50,6 +61,9 @@
 #define CURRENT_IN_FORGETING_FACTOR     0.4f
 #define CURRENT_PV_FORGETING_FACTOR		0.99f
 #define TEMP_FORGETING_FACTOR			0.9f
+
+
+
 
 //Pinout
 #define LED0_Pin 			GPIO_PIN_15

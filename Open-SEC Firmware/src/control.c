@@ -60,12 +60,12 @@ void control_init(const ConverterSettings_t* s, const CalibrationData_t * c) {
 
 	modConverterPWMOutputDisable();
 
-	pwm_init(cal.SwitchingFrequency, cal.ControllerFrequency, cal.DeadTimeRising, cal.DeadtimeFalling, cal.ADC_delay);
+	pwm_init(HW_SWITCHINGFREQUENCY, HW_CONTROLLERFREQUENCY, HW_DEADTIMERISING, HW_DEADTIMEFALLING, HW_ADC_DELAY);
 
 	analog_init();
 
 	Ts = pwm_GetControllerPeriod();
-	ControllerR = sqrtf(cal.L/cal.Clow)/ cal.Q-cal.RLint;
+	ControllerR = sqrtf(HW_L/HW_CLOW)/ HW_Q-HW_RLINT;
 
 	HAL_Delay(100);
 }
@@ -88,7 +88,7 @@ void control_controlloop(ConverterPhase_t* p){
 	float dvdt = (p->Vlow - p->Vlowm1) / (float)Ts;
 
 	p->Vlowm1 = p->Vlow;
-	float Ilowest = cal.Clow*dvdt + p->Iind;
+	float Ilowest = HW_CLOW*dvdt + p->Iind;
 	EMA(p->Ilow, Ilowest, CURRENT_PV_FORGETING_FACTOR);
 
 	if(p->Power){
@@ -103,7 +103,7 @@ void control_controlloop(ConverterPhase_t* p){
 
 #ifdef HW_TOPOLOGY_BOOST
 
-	float Vnn = p->Vsp - (p->Ilow *(ControllerR+cal.RLint));
+	float Vnn = p->Vsp - (p->Ilow *(ControllerR+HW_RLINT));
 
 	Ilim = p->Iindlim;
 
@@ -119,7 +119,7 @@ void control_controlloop(ConverterPhase_t* p){
 	}
 
 	//Output voltage limit
-	float Ioutlim = 0.8f * cal.Klim * cal.Chigh*(p->Vhighlim - p->Vhigh)/(Ts) + p->Ihigh;
+	float Ioutlim = 0.8f * HW_KLIM*HW_CHIGH*(p->Vhighlim - p->Vhigh)/(Ts) + p->Ihigh;
 
 	if(Ioutlim > p->Ihighlim){
 		Ioutlim =  p->Ihighlim;
@@ -144,8 +144,8 @@ void control_controlloop(ConverterPhase_t* p){
 	//Current limit
 	//float Vnlimup = -p->Vlow - (settings.RLint * p->Iind) + ((settings.Klim * settings.L /Ts)*(settings.PhaseCurrentMin - p->Iind) );
 	//float Vnlimlo = -p->Vlow - (settings.RLint * p->Iind) + ((settings.Klim * settings.L /Ts)*(Ilim - p->Iind) );
-	float Vnlimup = +p->Vlow + (cal.RLint * p->Iind) - (cal.Klim*cal.L*(settings.LowSideCurrentMinLimitSoft - p->Iind)/Ts);
-	float Vnlimlo = +p->Vlow + (cal.RLint * p->Iind) - (cal.Klim*cal.L*(Ilim - p->Iind)/Ts );
+	float Vnlimup = +p->Vlow + (HW_RLINT * p->Iind) - (HW_L*(settings.LowSideCurrentMinLimitSoft - p->Iind)/Ts);
+	float Vnlimlo = +p->Vlow + (HW_RLINT * p->Iind) - (HW_L*(Ilim - p->Iind)/Ts );
 
 	//Unlimited controller
 	Vn = Vnn + (p->Iind*ControllerR);
@@ -339,18 +339,18 @@ bool control_check_parameters(ConverterSettings_t* s, CalibrationData_t * c){
 
 	//Check UUID with calibraiton id, t check if calibration is done for this hardware
 
-	float fres = sqrtf(1/(2*pi*pi*c->L*c->Clow))*1.0e-3f;
-	if(c->ControllerFrequency > 45.0f)error = true;
-	if(c->ControllerFrequency < (8*fres))error = true;
-	if(c->SwitchingFrequency  < (5*fres))error = true;
+	//float fres = sqrtf(1/(2*pi*pi*HW_L*c->Clow))*1.0e-3f;
+	//if(c->ControllerFrequency > 45.0f)error = true;
+	//if(c->ControllerFrequency < (8*fres))error = true;
+	//if(c->SwitchingFrequency  < (5*fres))error = true;
 	//if(c->calibrated == false) error = true;
-	if(c->Q > 2.0f)error = true;
+	//if(c->Q > 2.0f)error = true;
 
 	//Check deadtime values
-	if(c->DeadTimeRising  > 188.0)error = true;
-	if(c->DeadTimeRising  < 5)error = true;
-	if(c->DeadtimeFalling > 188.0)error = true;
-	if(c->DeadtimeFalling < 5)error = true;
+	//if(c->DeadTimeRising  > 188.0)error = true;
+	//if(c->DeadTimeRising  < 5)error = true;
+	//if(c->DeadtimeFalling > 188.0)error = true;
+	//if(c->DeadtimeFalling < 5)error = true;
 
 	return error;
 }

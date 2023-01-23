@@ -81,6 +81,9 @@ void modCANinit(modCanSettings_t *s) {
 
 	for (int i = 9; i < 25; i++) {
 		pre = (int) round(clockspeed / (cansettings->baudrate * i));
+		if (pre == 0){
+			return;
+		}
 
 		S1 = (int) round((cansettings->samplepoint * (float) i) - 1);
 		S2 = i - S1 - 1;

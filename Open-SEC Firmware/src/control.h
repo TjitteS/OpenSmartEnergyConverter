@@ -108,17 +108,19 @@ typedef struct CalibrationData_t{
 	float Temperature_B;//4000.0f
 	float Temperature_R;//100000.0f
 	float Temperature_Ref;//25.0f
-	float ADC_delay;//0.1us
-	float SwitchingFrequency;
-	float ControllerFrequency;
-	float DeadTimeRising;
-	float DeadtimeFalling;
-	float L;
-	float Clow;
-	float Chigh;
-	float RLint;
-	float Q; //1
-	float Klim;
+
+	//Moved hardware related variables that do not change form unit to unit to harwhare.h
+	//float ADC_delay;//0.1us
+	//float SwitchingFrequency;
+	//float ControllerFrequency;
+	//float DeadTimeRising;
+	//float DeadtimeFalling;
+	//float L;
+	//float Clow;
+	//float Chigh;
+	//float RLint;
+	//float Q; //1
+	//float Klim;
 	uint32_t reserved[32];
 	uint16_t calcrc; //Checksum
 

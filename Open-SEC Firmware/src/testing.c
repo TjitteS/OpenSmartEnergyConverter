@@ -73,8 +73,8 @@ float getMpp(float* IVc){
 void modTestingInit(){
 
 #if defined(HW_TOPOLOGY_BOOST)
-#define Vbat 42.0f
-	modTestingPVInit(&cell, 40*0.649f, 40*0.742f, 1.3f, 1.5f, 1000);
+#define Vbat 120.0f
+	modTestingPVInit(&cell, 130*0.649f, 130*0.742f, 6.5f, 6.7f, 1000);
 	simstate.Vlow=30.0f;
 	simstate.Vhigh=Vbat;
 
@@ -176,18 +176,18 @@ void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* 
 	float dVhighdt 	= 0;
 
 	if(phase->enabled){
-		dVlowdt 	= (Ilow - state->Iind)/cal.Clow*dt;
-		dIinddt 	= (state->Vlow -(Dn*state->Vhigh))/cal.L*dt;
-		dVhighdt = ((state->Iind*Dn)-state->Ihigh-(0.3f/state->Vhigh))/cal.Chigh*dt;
+		dVlowdt 	= (Ilow - state->Iind)/HW_CLOW*dt;
+		dIinddt 	= (state->Vlow -(Dn*state->Vhigh))/HW_L*dt;
+		dVhighdt = ((state->Iind*Dn)-state->Ihigh-(0.3f/state->Vhigh))/HW_CHIGH*dt;
 	}else{
 
-		dVlowdt 	= (Ilow - state->Iind)/cal.Clow*dt;
+		dVlowdt 	= (Ilow - state->Iind)/HW_CLOW*dt;
 		dIinddt 	= -state->Iind;
-		dVhighdt = (-state->Ihigh-(0.3f/state->Vhigh))/cal.Chigh*dt;
+		dVhighdt = (-state->Ihigh-(0.3f/state->Vhigh))/HW_CHIGH*dt;
 
 		if(state->Vhigh < (state->Vlow + 2.5f)){
-			dVhighdt = ((state->Iind*Dn)-state->Ihigh-(0.3f/state->Vhigh))/cal.Chigh*dt;
-			dIinddt 	= (state->Vlow -state->Vhigh -2.5f - (state->Iind*2.0f))/cal.L*dt; // Added damping turn to increase stability
+			dVhighdt = ((state->Iind*Dn)-state->Ihigh-(0.3f/state->Vhigh))/HW_CHIGH*dt;
+			dIinddt 	= (state->Vlow -state->Vhigh -2.5f - (state->Iind*2.0f))/HW_L*dt; // Added damping turn to increase stability
 		}
 
 	}

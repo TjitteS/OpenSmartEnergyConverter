@@ -43,17 +43,17 @@ modConfig_t defaultConvig = {
 				4100.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
-				0.8f,	//float ADC_delay;//0.1us
-				100,	//float SwitchingFrequency;
-				35,	//float ControllerFrequency;
-				40,	//float DeadTimeRising;
-				40,	//float DedtimeFalling;
-				68e-6f,	//float L;
-				100e-6f,	//float Clow;
-				600e-6f,	//float Chigh;
-				30e-3f,	//float RLint;
-				1.0,	//float Q; //1
-				0.5,	//float Klim;
+//				0.8f,	//float ADC_delay;//0.1us
+//				100,	//float SwitchingFrequency;
+//				35,	//float ControllerFrequency;
+//				40,	//float DeadTimeRising;
+//				40,	//float DedtimeFalling;
+//				68e-6f,	//float L;
+//				100e-6f,	//float Clow;
+//				600e-6f,	//float Chigh;
+//				30e-3f,	//float RLint;
+//				1.0,	//float Q; //1
+//				0.5,	//float Klim;
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
 				0x5c3d,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;

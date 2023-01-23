@@ -54,6 +54,18 @@
 #define HW_LIMIT_HS_CURRENT_HARD 12000
 #define HW_LIMIT_LS_CURRENT_HARD 12000
 
+#define HW_ADC_DELAY           0.8f
+#define HW_SWITCHINGFREQUENCY  36
+#define HW_CONTROLLERFREQUENCY 35
+#define HW_DEADTIMERISING      111
+#define HW_DEADTIMEFALLING     40
+#define HW_L                   100e-6
+#define HW_CLOW                220e-6
+#define HW_CHIGH               440e-6
+#define HW_RLINT               30e-6
+#define HW_Q                   1
+#define HW_KLIM                0.4
+
 //Pinout
 #define LED0_Pin 			GPIO_PIN_15
 #define LED0_GPIO_Port 		GPIOC
