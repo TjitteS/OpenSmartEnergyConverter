@@ -47,8 +47,6 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 	uint16_t flash_res;
 	uint32_t new_app_offset;
 
-	uint16_t calcrc;
-
 	packet_id = (COMM_PACKET_ID) data[0];
 	last_packet_id =packet_id;
 	data++;

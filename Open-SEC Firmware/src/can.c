@@ -205,7 +205,6 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 	uint16_t crc;
 
 	if (destinaitonId == canid) {
-		int32_t ind = 0;
 		switch (packetid) {
 		case CAN_PACKET_Power:
 		case CAN_PACKET_status:

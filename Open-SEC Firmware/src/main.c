@@ -58,8 +58,6 @@ int main(void) {
 	dma_init();
 
 
-
-
 	hw_io_init();
 
 	acktiveConfig = modConfigInit();

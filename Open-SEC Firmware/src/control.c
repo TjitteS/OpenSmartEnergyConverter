@@ -19,6 +19,8 @@
 #include "control.h"
 #include "testing.h"
 #include "crc.h"
+#include "string.h"
+
 
 #define METER_EMA 0.95f
 #define EMA(_A_, _B_, _F_)	_A_ = (_F_ * _A_) + ((1 - _F_) * _B_)

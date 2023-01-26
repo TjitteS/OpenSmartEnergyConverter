@@ -30,32 +30,26 @@ modConfig_t defaultConvig = {
 		{//CalibrationData_t	calData;
 				"SEC-B80-8A",
 				"V0.2.1",
-				"00000000",
+				"0000000",
 				false,
 				-4.3f,//float InputCurrentGain;// A/V
-				0.02f,	//float InputCurrentOffset;//mA
-				31.0f,	//float InputVoltageGain;// V/V
-				-0.451f,	//float InputVoltageOffset;//mV
+				10.0f,	//float InputCurrentOffset;//mA
+
+				30.9f,	//float InputVoltageGain;// V/V
+				100.0f,//float InputVoltageOffset;//mV
+
 				4.3f,	//float OutputCurrentGain;//  A/V
-				0.02f,	//float OutputCurrentOffset;//mA
-				31.0f,	//float OutputVoltageGain;// V/V
-				-0.451,	//float OutputVoltageOffset;//mV
+				-10.0f,	//float OutputCurrentOffset;//mA
+
+				30.9f,	//float OutputVoltageGain;// V/V
+				100.0f,	//float OutputVoltageOffset;//mV
+
 				4100.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
-//				0.8f,	//float ADC_delay;//0.1us
-//				100,	//float SwitchingFrequency;
-//				35,	//float ControllerFrequency;
-//				40,	//float DeadTimeRising;
-//				40,	//float DedtimeFalling;
-//				68e-6f,	//float L;
-//				100e-6f,	//float Clow;
-//				600e-6f,	//float Chigh;
-//				30e-3f,	//float RLint;
-//				1.0,	//float Q; //1
-//				0.5,	//float Klim;
+
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0x5c3d,	//uint16_t calcrc; //Checksum
+				0xaf83,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
 				0.99f, //float meterfilterCoeficient;
 				80.0e3f, //float HighSideVoltageLimitSoft;		// mV
@@ -66,11 +60,11 @@ modConfig_t defaultConvig = {
 				10.0f,//float PhaseHighSideEnableCurrent;	// mA
 				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius
 				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
-				true,//bool outputEnable;
+				false,//bool outputEnable;
 		},{//modMPPTsettings_t mpptsettings;
-				200.0f, //float PO_Stepsize; mV
+				100.0f, //float PO_Stepsize; mV
 				30, //uint32_t PO_Timestep; ms
-				0.1, //float P&O Step Size Gain;
+				2.0, //float P&O Step Size Gain;
 				5, //float jump_PowerThreshold;
 				0, //int jump_Rate;
 		},{//modCanSettings_t cansettings;
@@ -160,16 +154,15 @@ void hw_adc_init(){
 	sConfig.OffsetNumber = ADC_OFFSET_NONE;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
 	sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-	//sConfig.SingleDiff = ADC_DIFFERENTIAL_ENDED;
-	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.SingleDiff = ADC_DIFFERENTIAL_ENDED;
 
-	//sConfig.Channel = ADC_CHANNEL_3;
-	sConfig.Channel = ADC_CHANNEL_4;
+	sConfig.Channel = ADC_CHANNEL_3;
+
 
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
-	//sConfig.Channel = ADC_CHANNEL_4;
-	sConfig.Channel = ADC_CHANNEL_5;
+	sConfig.Channel = ADC_CHANNEL_4;
+	//sConfig.Channel = ADC_CHANNEL_5;
 
 	HAL_ADC_ConfigChannel(&hadc4, &sConfig);
 
@@ -192,6 +185,8 @@ void hw_adc_init(){
 	sConfig.Channel = ADC_CHANNEL_2;
 	sConfig.Rank = ADC_REGULAR_RANK_3;
 	HAL_ADC_ConfigChannel(&hadc5, &sConfig);
+
+
 }
 
 #endif

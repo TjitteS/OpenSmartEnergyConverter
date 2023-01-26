@@ -125,7 +125,6 @@ uint64_t* addr;
 int written = 0;
 
 uint16_t modFlashWriteNewAppData(uint32_t offset, uint8_t *data, uint32_t len) {
-	uint16_t returnVal = HAL_OK;
 
 	//Check if length and offset are aligned with and deviseble by blocks of 8 bytes.
 	if ((offset % 8 != 0) || (len % 8 != 0)){

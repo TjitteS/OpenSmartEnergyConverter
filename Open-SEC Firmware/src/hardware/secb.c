@@ -32,33 +32,23 @@ extern ADC_HandleTypeDef hadc5;
 modConfig_t defaultConvig = {
 		{//CalibrationData_t	calData;
 				"SEC-B175-7A",
-				"V221201",
-				"00000000",
+				"0002212",
+				"0000000",
 				false,
-				4.82,//float InputCurrentGain;// A/V
-				-200.0,	//float InputCurrentOffset;//mA
-				67.7,	//float InputVoltageGain;// V/V
-				3100,	//float InputVoltageOffset;//mV
-				-4.82,	//float OutputCurrentGain;//  A/V
-				-200.0,	//float OutputCurrentOffset;//mA
-				67.7,	//float OutputVoltageGain;// V/V
-				3100,	//float OutputVoltageOffset;//mV
+				4.9f,//float InputCurrentGain;// A/V
+				100.0f,	//float InputCurrentOffset;//mA
+				78.6f,	//float InputVoltageGain;// V/V
+				350.0f,	//float InputVoltageOffset;//mV
+				-4.9f,	//float OutputCurrentGain;//  A/V
+				100.0f,	//float OutputCurrentOffset;//mA
+				78.6f,	//float OutputVoltageGain;// V/V
+				350.0f,	//float OutputVoltageOffset;//mV
+
 				4480.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
-//				0.8f,	//float ADC_delay;//0.1us
-//				42,	//float SwitchingFrequency;
-//				35,	//float ControllerFrequency;
-//				67,	//float DeadTimeRising;
-//				67,	//float DedtimeFalling;
-//				120e-6,	//float L, H
-//				220e-6,	//float Clow, F
-//				440e-6,	//float Chigh; F
-//				30e-6,	//float RLint;
-//				1,	//float Q; //1
-//				0.4,	//float Klim;
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0xac61,	//uint16_t calcrc; //Checksum
+				0xd735,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
 				0.9f, 	// float meterfilterCoeficient;
 				147.0e3f, 	// float HighSideVoltageLimitSoft;	 mV

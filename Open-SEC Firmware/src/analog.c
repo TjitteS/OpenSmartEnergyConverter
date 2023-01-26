@@ -25,6 +25,7 @@ ADC_HandleTypeDef hadc4;
 ADC_HandleTypeDef hadc5;
 
 extern ConverterPhase_t phase;
+extern CalibrationData_t cal;
 
 
 void analog_init() {
@@ -158,8 +159,23 @@ void analog_init() {
 	HAL_ADC_Init(&hadc4);
 	HAL_ADC_Init(&hadc5);
 
-	//Initialize channels.
+	//Initialize channels
+
 	hw_adc_init();
+
+	if(cal.calibrated == false){
+		HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc3, ADC_SINGLE_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc4, ADC_SINGLE_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
+
+		HAL_ADCEx_Calibration_Start(&hadc1, ADC_DIFFERENTIAL_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc2, ADC_DIFFERENTIAL_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc3, ADC_DIFFERENTIAL_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc4, ADC_DIFFERENTIAL_ENDED);
+		HAL_ADCEx_Calibration_Start(&hadc5, ADC_DIFFERENTIAL_ENDED);
+	}
 
 
 	HAL_ADC_Start_IT(&hadc2);
@@ -211,7 +227,7 @@ void ADC3_IRQHandler(void) {
 void ADC4_IRQHandler(void) {
 
 	uint32_t tmp_isr = ADC4->ISR;
-	uint32_t tmp_ier = ADC4->IER;
+	//uint32_t tmp_ier = ADC4->IER;
 
 	if (tmp_isr & ADC_ISR_EOC) {
 		uint32_t raw = ADC4->DR;
