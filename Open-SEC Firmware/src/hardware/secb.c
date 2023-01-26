@@ -53,8 +53,8 @@ modConfig_t defaultConvig = {
 				0.9f, 	// float meterfilterCoeficient;
 				147.0e3f, 	// float HighSideVoltageLimitSoft;	 mV
 				95.0e3f,	// float LowSideVoltageLimitSoft;	 mV
-				7.0e3f, 	// float HighSideCurrentLimitSoft;	 mA
-				7.0e3f, 	// float LowSideCurrentMaxLimitSoft, mA
+				7.5e3f, 	// float HighSideCurrentLimitSoft;	 mA
+				7.5e3f, 	// float LowSideCurrentMaxLimitSoft, mA
 				10.0f, 		// float LowSideCurrentMinLimitSoft, mA
 				10.0f,		// float PhaseHighSideEnableCurrent, mA
 				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius

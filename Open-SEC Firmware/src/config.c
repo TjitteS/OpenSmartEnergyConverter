@@ -13,11 +13,13 @@ modConfig_t* modConfigInit(void) {
 
 	if(valid){
 		config = storedConfig;
+		modConfigLimitSettings(&config);
 		return &config;
 	}
 	else{
 		//Load default values. Also load default calibration.]
 		memcpy(&config, &defaultConvig, sizeof(modConfig_t));
+		modConfigLimitSettings(&config);
 
 		//Save
 		if(modConfigStoreConfig() == false){
@@ -54,6 +56,7 @@ bool modConfigSetConfig(modConfig_t* conf){
 }
 bool modConfigStoreAndLoadDefaultConfig(void) {
 	modConfigLoadDefaultConfig();
+
 	return modConfigStoreConfig();
 };
 
@@ -67,6 +70,7 @@ void modConfigLoadDefaultConfig() {
 	memcpy(&config.cansettings, &defaultConvig.cansettings, sizeof(modCanSettings_t));
 	memcpy(&config.mpptsettings, &defaultConvig.mpptsettings, sizeof(modMPPTsettings_t));
 	memcpy(&config.settings, &defaultConvig.settings, sizeof(ConverterSettings_t));
+	modConfigLimitSettings(&config);
 }
 
 void modConfigLimitSettings(modConfig_t* c){
@@ -76,5 +80,27 @@ void modConfigLimitSettings(modConfig_t* c){
 	if(c->settings.TemperatureLimitStart > c->settings.TemperatureLimitEnd){
 		c->settings.TemperatureLimitStart = c->settings.TemperatureLimitEnd;
 	}
+
+	if(c->settings.HighSideCurrentLimitSoft > HW_LIMIT_HS_CURRENT_HARD * 0.65) c->settings.HighSideCurrentLimitSoft = HW_LIMIT_HS_CURRENT_HARD * 0.65;
+	if(c->settings.LowSideCurrentMaxLimitSoft > HW_LIMIT_LS_CURRENT_HARD * 0.65) c->settings.LowSideCurrentMaxLimitSoft = HW_LIMIT_LS_CURRENT_HARD * 0.65;
+	if(c->settings.HighSideVoltageLimitSoft > HW_LIMIT_HS_VOLTAGE_HARD * 0.9) c->settings.HighSideVoltageLimitSoft = HW_LIMIT_HS_VOLTAGE_HARD * 0.9;
+	if(c->settings.LowSideVoltageLimitSoft > HW_LIMIT_LS_VOLTAGE_HARD * 0.9) c->settings.LowSideVoltageLimitSoft = HW_LIMIT_LS_VOLTAGE_HARD * 0.9;
+
+	if(c->mpptsettings.PO_Stepsize         < 0)c->mpptsettings.PO_Stepsize          = 0;
+	if(c->mpptsettings.PO_Timestep         < 10)c->mpptsettings.PO_Timestep         = 10;
+	if(c->mpptsettings.PO_StepSizeGain     < 0)c->mpptsettings.PO_StepSizeGain      = 0;
+	if(c->mpptsettings.jump_PowerThreshold < 0)c->mpptsettings.jump_PowerThreshold  = 0;
+	if(c->mpptsettings.jump_Rate           < 0)c->mpptsettings.jump_Rate            = 0;
+
+
+	if(c->cansettings.baudrate     > 1000)c->cansettings.baudrate     = 1000;
+	if(c->cansettings.baudrate     < 10)  c->cansettings.baudrate     = 10;
+
+	if(c->cansettings.samplepoint  > 0.9)c->cansettings.samplepoint  = 0.9;
+	if(c->cansettings.samplepoint  < 0.1)c->cansettings.samplepoint  = 0.1;
+	if(c->cansettings.generalCanId > 112)c->cansettings.generalCanId = 112;
+	if(c->cansettings.generalCanId < 0)c->cansettings.generalCanId = 0;
+
+
 }
 
