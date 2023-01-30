@@ -188,6 +188,7 @@ void control_set_vhs_limit(float v);
 void modConverterPWMOutputDisable(void);
 void modConverterPWMOutputEnable(void);
 
+PhaseMode_t modConverterGetMode(void);
 
 void control_set_setpoint(float v);
 float control_get_setpoint(void);
