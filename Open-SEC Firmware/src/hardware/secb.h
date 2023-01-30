@@ -44,13 +44,13 @@
 //Filters
 #define VOLTAGE_IN_FORGETING_FACTOR		0.8f
 #define VOLTAGE_OUT_FORGETING_FACTOR	0.8f
-#define CURRENT_IN_FORGETING_FACTOR     0.4f
+#define CURRENT_IN_FORGETING_FACTOR     0.0f
 #define CURRENT_PV_FORGETING_FACTOR		0.99f
-#define TEMP_FORGETING_FACTOR			0.9f
+#define TEMP_FORGETING_FACTOR			0.95f
 
 //Limits
-#define HW_LIMIT_HS_VOLTAGE_HARD 180000
-#define HW_LIMIT_LS_VOLTAGE_HARD 180000
+#define HW_LIMIT_HS_VOLTAGE_HARD 184210
+#define HW_LIMIT_LS_VOLTAGE_HARD 184210
 #define HW_LIMIT_HS_CURRENT_HARD 12000
 #define HW_LIMIT_LS_CURRENT_HARD 12000
 
@@ -63,8 +63,8 @@
 #define HW_CLOW                220e-6
 #define HW_CHIGH               440e-6
 #define HW_RLINT               30e-6
-#define HW_Q                   1
-#define HW_KLIM                0.4
+#define HW_Q                   0.99
+#define HW_KLIM                0.5
 
 //Pinout
 #define LED0_Pin 			GPIO_PIN_15

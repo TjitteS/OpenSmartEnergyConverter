@@ -77,17 +77,21 @@ void modMPPTtask() {
 			break;
 
 		case MpptState_Sweep:
-			mppt_is[mpptSweepIndex] = control_get_regulated_current();
-			mppt_vs[mpptSweepIndex] = control_get_regulated_voltage();
 
-			mpptSweepSP += mpptSweepStepsize;
-			control_set_setpoint(mpptSweepSP);
-			mpptSweepIndex++;
+			if(modConverterGetMode() != PhaseMode_CIC){
+				mppt_is[mpptSweepIndex] = control_get_regulated_current();
+				mppt_vs[mpptSweepIndex] = control_get_regulated_voltage();
 
-			if(mpptSweepIndex >= MPPT_SWEEP_SIZE){
-				currentmode = MpptState_init;
-				modCommandsSendSweep();
+				mpptSweepSP += mpptSweepStepsize;
+				control_set_setpoint(mpptSweepSP);
+				mpptSweepIndex++;
+
+				if(mpptSweepIndex >= MPPT_SWEEP_SIZE){
+					currentmode = MpptState_init;
+					modCommandsSendSweep();
+				}
 			}
+
 
 			break;
 		case MpptState_ConstantVoltage:
