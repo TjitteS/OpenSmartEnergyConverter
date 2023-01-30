@@ -242,7 +242,10 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			//acktiveConfig->calData.Q                    = buffer_get_float32_auto(data, &ind);
 			//acktiveConfig->calData.Klim                 = buffer_get_float32_auto(data, &ind);
 			//acktiveConfig->calData.calibrated           = buffer_get_int8(data, &ind);
-			//acktiveConfig->calData.calcrc =  libCRCCalcCRC16((unsigned char *) &(acktiveConfig->calData), sizeof(CalibrationData_t) - sizeof(uint16_t) - 2);
+
+			acktiveConfig->calData.calcrc =  libCRCCalcCRC16((unsigned char *) &(acktiveConfig->calData), sizeof(CalibrationData_t) - sizeof(uint16_t) - 2);
+
+			main_init_after_config();
 			break;
 
 		case COMM_READ_CALDATA:
