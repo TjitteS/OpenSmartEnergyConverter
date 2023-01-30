@@ -108,9 +108,11 @@ void modMPPTPerturbAndObserve(){
 
 	switch(modConverterGetMode()){
 	case PhaseMode_MinInputCurrent:
-		Vsp -= modMpptsettings->PO_Stepsize;
-		control_set_setpoint(Vsp);
+		//Vsp -= modMpptsettings->PO_Stepsize;
+		Vsp = control_get_regulated_voltage() - (0.5*modMpptsettings->PO_Stepsize);
+		control_set_setpoint(Vsp );
 		return;
+	case PhaseMode_TD:
 	case PhaseMode_CIC:
 		Vsp += modMpptsettings->PO_Stepsize;
 		control_set_setpoint(Vsp);
@@ -170,9 +172,15 @@ void modMPPTPerturbAndObserve(){
 		float stepsize;
 		if(modMpptsettings->PO_StepSizeGain > 0.0f){
 			stepsize = modMpptsettings->PO_Stepsize * (1.0f+(fabsf(dpdv)*modMpptsettings->PO_StepSizeGain));
+
+			//Maximize step size to some reasonable number.
+			if (stepsize > 5000) stepsize = 5000;
+
 		}else{
 			stepsize = modMpptsettings->PO_Stepsize;
 		}
+
+
 
 		if(dpdv > 0){
 			MpptLastAckion = MpptAcktionState_Up;

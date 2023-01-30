@@ -18,7 +18,7 @@
 #include "math.h"
 #include "main.h"
 
-float ControllerPeriod;
+float ControllerPeriod; //
 float timebase; // Milliseconds per count
 float triggerdelay;
 
