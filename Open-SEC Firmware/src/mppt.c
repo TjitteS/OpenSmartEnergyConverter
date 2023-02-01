@@ -109,23 +109,32 @@ float randomf(float min, float max){
 
 void modMPPTPerturbAndObserve(){
 	float Vsp = control_get_setpoint();
+	float i = control_get_regulated_current();
+	float v = control_get_regulated_voltage();
+	float p = i*v;
 
 	switch(modConverterGetMode()){
 	case PhaseMode_MinInputCurrent:
 		//Vsp -= modMpptsettings->PO_Stepsize;
-		Vsp = control_get_regulated_voltage() - (0.5*modMpptsettings->PO_Stepsize);
+		Vsp = 1e3*control_get_regulated_voltage() - (0.5*modMpptsettings->PO_Stepsize);
 		control_set_setpoint(Vsp );
+		pv = v;
+		pp=p;
 		return;
 	case PhaseMode_TD:
 	case PhaseMode_CIC:
 		Vsp += modMpptsettings->PO_Stepsize;
 		control_set_setpoint(Vsp);
+		pv = v;
+		pp=p;
 		return;
 
 	case PhaseMode_COC:
 	case PhaseMode_COV:
 	case PhaseMode_Fault:
 		//No setpoint voltage setable
+		pv = v;
+		pp=p;
 		return;
 
 	case PhaseMode_CIV:
@@ -133,9 +142,7 @@ void modMPPTPerturbAndObserve(){
 		break;
 	}
 
-	float i = control_get_regulated_current();
-	float v = control_get_regulated_voltage();
-	float p = i*v;
+
 
 	float dv = v - pv;
 	float dp = p - pp;
@@ -180,6 +187,7 @@ void modMPPTPerturbAndObserve(){
 			//Maximize step size to some reasonable number.
 			if (stepsize > 5000) stepsize = 5000;
 
+
 		}else{
 			stepsize = modMpptsettings->PO_Stepsize;
 		}
@@ -193,6 +201,7 @@ void modMPPTPerturbAndObserve(){
 			MpptLastAckion = MpptAcktionState_down;
 			Vsp -= stepsize;
 		}
+
 
 	}
 

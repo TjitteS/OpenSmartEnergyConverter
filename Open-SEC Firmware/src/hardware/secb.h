@@ -62,7 +62,7 @@
 #define HW_L                   100e-6
 #define HW_CLOW                220e-6
 #define HW_CHIGH               440e-6
-#define HW_RLINT               30e-6
+#define HW_RLINT               18e-6
 #define HW_Q                   0.99
 #define HW_KLIM                0.5
 
