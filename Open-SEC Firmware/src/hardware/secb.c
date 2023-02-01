@@ -32,23 +32,23 @@ extern ADC_HandleTypeDef hadc5;
 modConfig_t defaultConvig = {
 		{//CalibrationData_t	calData;
 				"SEC-B175-7A",
-				"0002212",
+				"0002301",
 				"0000000",
 				false,
-				4.9f,//float InputCurrentGain;// A/V
-				100.0f,	//float InputCurrentOffset;//mA
-				78.6f,	//float InputVoltageGain;// V/V
-				350.0f,	//float InputVoltageOffset;//mV
-				-4.9f,	//float OutputCurrentGain;//  A/V
-				100.0f,	//float OutputCurrentOffset;//mA
-				78.6f,	//float OutputVoltageGain;// V/V
-				350.0f,	//float OutputVoltageOffset;//mV
+				4.82f,//float InputCurrentGain;// A/V
+				0.0f,	//float InputCurrentOffset;//mA
+				78.9f,	//float InputVoltageGain;// V/V
+				0.0f,	//float InputVoltageOffset;//mV
+				-4.82f,	//float OutputCurrentGain;//  A/V
+				0.0f,	//float OutputCurrentOffset;//mA
+				78.9f,	//float OutputVoltageGain;// V/V
+				0.0f,	//float OutputVoltageOffset;//mV
 
 				4480.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0xd735,	//uint16_t calcrc; //Checksum
+				0xc655,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
 				0.9f, 	// float meterfilterCoeficient;
 				147.0e3f, 	// float HighSideVoltageLimitSoft;	 mV
@@ -61,9 +61,9 @@ modConfig_t defaultConvig = {
 				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
 				false,//bool outputEnable;
 		},{//modMPPTsettings_t mpptsettings;
-				100.0f, //float PO_Stepsize; mV
-				20, //uint32_t PO_Timestep; ms
-				3.0f,  // float P&O Step Size Gain;
+				200.0f, //float PO_Stepsize; mV
+				30, //uint32_t PO_Timestep; ms
+				1.5f,  // float P&O Step Size Gain;
 				0, //float jump_PowerThreshold;
 				0, //int jump_Rate;
 		},{//modCanSettings_t cansettings;
