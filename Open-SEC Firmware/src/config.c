@@ -86,6 +86,8 @@ void modConfigLimitSettings(modConfig_t* c){
 	if(c->settings.HighSideVoltageLimitSoft > HW_LIMIT_HS_VOLTAGE_HARD * 0.95) c->settings.HighSideVoltageLimitSoft = HW_LIMIT_HS_VOLTAGE_HARD * 0.95;
 	if(c->settings.LowSideVoltageLimitSoft > HW_LIMIT_LS_VOLTAGE_HARD * 0.95) c->settings.LowSideVoltageLimitSoft = HW_LIMIT_LS_VOLTAGE_HARD * 0.95;
 
+	if(c->settings.LowSideCurrentMinLimitSoft < 0.01)c->settings.LowSideCurrentMinLimitSoft = 0.01;
+
 	if(c->mpptsettings.PO_Stepsize         < 0)c->mpptsettings.PO_Stepsize          = 0;
 	if(c->mpptsettings.PO_Timestep         < 10)c->mpptsettings.PO_Timestep         = 10;
 	if(c->mpptsettings.PO_StepSizeGain     < 0)c->mpptsettings.PO_StepSizeGain      = 0;
@@ -100,6 +102,7 @@ void modConfigLimitSettings(modConfig_t* c){
 	if(c->cansettings.samplepoint  < 0.1)c->cansettings.samplepoint  = 0.1;
 	if(c->cansettings.generalCanId > 112)c->cansettings.generalCanId = 112;
 	if(c->cansettings.generalCanId < 0)c->cansettings.generalCanId = 0;
+
 
 
 }

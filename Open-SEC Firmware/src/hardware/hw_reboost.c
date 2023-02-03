@@ -32,24 +32,24 @@ modConfig_t defaultConvig = {
 				"V0.2.1",
 				"0000000",
 				false,
-				-4.3f,//float InputCurrentGain;// A/V
-				10.0f,	//float InputCurrentOffset;//mA
+				-8.6f,//float InputCurrentGain;// A/V
+				0.0f,	//float InputCurrentOffset;//mA
 
 				30.9f,	//float InputVoltageGain;// V/V
-				100.0f,//float InputVoltageOffset;//mV
+				0.0f,//float InputVoltageOffset;//mV
 
-				4.3f,	//float OutputCurrentGain;//  A/V
-				-10.0f,	//float OutputCurrentOffset;//mA
+				8.6f,	//float OutputCurrentGain;//  A/V
+				0.0f,	//float OutputCurrentOffset;//mA
 
 				30.9f,	//float OutputVoltageGain;// V/V
-				100.0f,	//float OutputVoltageOffset;//mV
+				0.0f,	//float OutputVoltageOffset;//mV
 
 				4100.0f,	//float Temperature_B;//4000.0f
 				100.0f,	//float Temperature_R;//100000.0f
 				25.0f,	//float Temperature_Ref;//25.0f
 
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0xaf83,	//uint16_t calcrc; //Checksum
+				0xa225,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
 				0.99f, //float meterfilterCoeficient;
 				80.0e3f, //float HighSideVoltageLimitSoft;		// mV
