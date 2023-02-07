@@ -58,12 +58,15 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);	/* end of "RAM" Ram type memory */
 _Min_Heap_Size = 0x200 ;	/* required amount of heap  */
 _Min_Stack_Size = 0x400 ;	/* required amount of stack */
 
-/* Memories definition */
+/* Memories definition Flash size = 512 - BOOT - EPROM / 2 = 247K, then round to blocks of 2 k*/
 MEMORY
 {
-  RAM	(xrw)	: ORIGIN = 0x20000000,	LENGTH = 128K
-  FLASH	(rx)	: ORIGIN = 0x08000000,	LENGTH = 512K -2K
-  EEPROM(rx)	: ORIGIN = 0x08000000+512K-2K,  LENGTH = 2k
+  RAM	    (xrw)	: ORIGIN = 0x20000000,			LENGTH = 128K -2K
+  EEPROMRAM	(xrw)	: ORIGIN = 0x20000000+128K-2K,	LENGTH = 2K
+  FLASH	    (rx)	: ORIGIN = 0x08000000,			LENGTH = 246K
+  APP		(rx)	: ORIGIN = 0x08000000+246K,		LENGTH = 248K
+  EEPROMFLS (rx)	: ORIGIN = 0x08000000+512K-18K, LENGTH = 2k
+  BOOT		(rx)	: ORIGIN = 0x08000000+512K-16k, LENGTH = 16k
 }
 
 /* Sections */
@@ -190,13 +193,34 @@ SECTIONS
   
   } >RAM
   
- .erom (NOLOAD) :
+ .erom_flash (NOLOAD) :
   {
     . = ALIGN(4);
        *(.erom)
     . = ALIGN(4);
-  } > EEPROM
-
+  } > EEPROMFLS
+  
+   .erom_ram (NOLOAD) :
+  {
+    . = ALIGN(4);
+       *(.erom)
+    . = ALIGN(4);
+  } > EEPROMRAM
+  
+  .bootflash (NOLOAD) :
+  {
+  	. = ALIGN(4);
+       *(.boot)
+    . = ALIGN(4);
+  } > BOOT
+  
+  .appflash (NOLOAD) :
+  {
+  	. = ALIGN(4);
+       *(.app)
+    . = ALIGN(4);
+  } > APP
+  
   /* Remove information from the compiler libraries */
   /DISCARD/ :
   {

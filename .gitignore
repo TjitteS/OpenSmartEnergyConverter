@@ -6,6 +6,7 @@
 *.ko
 *.obj
 *.elf
+*.bin
 
 # Linker output
 *.ilk
@@ -22,5 +23,17 @@
 *.la
 *.lo
 
-/*/Debug/*
-/*/Simulation/*
+*.bak
+
+
+/Open-SEC Firmware/SEC-B175-7A
+/Open-SEC Firmware/SEC-B175-7A/*
+/Open-SEC Firmware/SEC-B175-7A-SIM/
+/Open-SEC Firmware/SEC-B175-7A-SIM/*
+/Open-SEC Firmware/SEC-B80-8A
+/Open-SEC Firmware/SEC-B80-8A/*
+/Open-SEC Firmware/SEC-B80-8A-SIM/
+/Open-SEC Firmware/SEC-B80-8A-SIM/*
+
+/Open-SEC Bootloader/Debug
+/Open-SEC Bootloader/Debug/*
