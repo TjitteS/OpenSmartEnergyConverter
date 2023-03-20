@@ -35,6 +35,7 @@ typedef enum {
 	MpptState_init,
 	MpptState_PO,
 	MpptState_SweepStart,
+	MpptState_SweepStartupdelay,
 	MpptState_Sweep,
 	MpptState_ConstantVoltage,
 }modMPPTstate_t;
