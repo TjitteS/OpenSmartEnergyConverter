@@ -146,8 +146,8 @@ void control_controlloop(ConverterPhase_t* p){
 	//Current limit
 	//float Vnlimup = -p->Vlow - (settings.RLint * p->Iind) + ((settings.Klim * settings.L /Ts)*(settings.PhaseCurrentMin - p->Iind) );
 	//float Vnlimlo = -p->Vlow - (settings.RLint * p->Iind) + ((settings.Klim * settings.L /Ts)*(Ilim - p->Iind) );
-	float Vnlimup = +p->Vlow + (HW_RLINT * p->Iind) - (HW_KLIM*HW_L*(settings.LowSideCurrentMinLimitSoft - p->Iind)/Ts);
-	float Vnlimlo = +p->Vlow + (HW_RLINT * p->Iind) - (HW_KLIM*HW_L*(Ilim - p->Iind)/Ts );
+	float Vnlimup = +p->Vlow - (HW_RLINT * p->Iind) - (HW_KLIM*HW_L*(settings.LowSideCurrentMinLimitSoft - p->Iind)/Ts);
+	float Vnlimlo = +p->Vlow - (HW_RLINT * p->Iind) - (HW_KLIM*HW_L*(Ilim - p->Iind)/Ts );
 
 	//Unlimited controller
 	Vn = Vnn + (p->Iind*ControllerR);

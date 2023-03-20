@@ -50,20 +50,20 @@ modConfig_t defaultConvig = {
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
 				0xc655,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
-				0.9f, 	// float meterfilterCoeficient;
+				0.995f, 	// float meterfilterCoeficient;
 				147.0e3f, 	// float HighSideVoltageLimitSoft;	 mV
 				95.0e3f,	// float LowSideVoltageLimitSoft;	 mV
 				7.5e3f, 	// float HighSideCurrentLimitSoft;	 mA
 				7.5e3f, 	// float LowSideCurrentMaxLimitSoft, mA
-				10.0f, 		// float LowSideCurrentMinLimitSoft, mA
-				10.0f,		// float PhaseHighSideEnableCurrent, mA
+				-300.0f, 		// float LowSideCurrentMinLimitSoft, mA
+				-500.0f,		// float PhaseHighSideEnableCurrent, mA
 				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius
 				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
 				false,//bool outputEnable;
 		},{//modMPPTsettings_t mpptsettings;
-				200.0f, //float PO_Stepsize; mV
-				30, //uint32_t PO_Timestep; ms
-				1.5f,  // float P&O Step Size Gain;
+				500.0f, //float PO_Stepsize; mV
+				50, //uint32_t PO_Timestep; ms
+				0.8f,  // float P&O Step Size Gain;
 				0, //float jump_PowerThreshold;
 				0, //int jump_Rate;
 		},{//modCanSettings_t cansettings;
