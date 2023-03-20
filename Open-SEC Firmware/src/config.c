@@ -86,7 +86,8 @@ void modConfigLimitSettings(modConfig_t* c){
 	if(c->settings.HighSideVoltageLimitSoft > HW_LIMIT_HS_VOLTAGE_HARD * 0.95) c->settings.HighSideVoltageLimitSoft = HW_LIMIT_HS_VOLTAGE_HARD * 0.95;
 	if(c->settings.LowSideVoltageLimitSoft > HW_LIMIT_LS_VOLTAGE_HARD * 0.95) c->settings.LowSideVoltageLimitSoft = HW_LIMIT_LS_VOLTAGE_HARD * 0.95;
 
-	if(c->settings.LowSideCurrentMinLimitSoft < 0.01)c->settings.LowSideCurrentMinLimitSoft = 0.01;
+	if(c->settings.LowSideCurrentMinLimitSoft < -500.0f)c->settings.LowSideCurrentMinLimitSoft = -500.0f;
+	if(c->settings.PhaseHighSideEnableCurrent < -500.0f)c->settings.PhaseHighSideEnableCurrent = -500.0f;
 
 	if(c->mpptsettings.PO_Stepsize         < 0)c->mpptsettings.PO_Stepsize          = 0;
 	if(c->mpptsettings.PO_Timestep         < 10)c->mpptsettings.PO_Timestep         = 10;

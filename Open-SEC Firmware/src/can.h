@@ -26,7 +26,8 @@
 #define RX_CAN_BUFFER_SIZE	    	PACKET_MAX_PL_LEN
 
 typedef enum {
-	CAN_PACKET_Power, CAN_PACKET_status, //(Limitl, Fault, Temperatures,)
+	CAN_PACKET_Power,
+	CAN_PACKET_status, //(Limitl, Fault, Temperatures,)
 	CAN_PACKET_FILL_RX_BUFFER = 0x05,
 	CAN_PACKET_FILL_RX_BUFFER_LONG,
 	CAN_PACKET_PROCESS_RX_BUFFER,

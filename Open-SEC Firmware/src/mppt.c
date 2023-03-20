@@ -55,6 +55,8 @@ void modMPPTinit(modMPPTsettings_t *settings) {
 	MpptLastAckion = MpptAcktionState_Init;
 }
 
+uint32_t tsweepstart;
+
 
 void modMPPTtask() {
 	if (modDelayTick1ms(&lastsweep, modMpptsettings->PO_Timestep)) {
@@ -73,7 +75,14 @@ void modMPPTtask() {
 		case MpptState_SweepStart:
 			mpptSweepIndex = 0;
 			control_set_setpoint(mpptSweepSP);
-			currentmode = MpptState_Sweep;
+			currentmode = MpptState_SweepStartupdelay;
+			tsweepstart = HAL_GetTick();
+			break;
+
+		case MpptState_SweepStartupdelay:
+			if ((HAL_GetTick() - tsweepstart) > 200){
+				currentmode = MpptState_Sweep;
+			}
 			break;
 
 		case MpptState_Sweep:
@@ -116,10 +125,10 @@ void modMPPTPerturbAndObserve(){
 	switch(modConverterGetMode()){
 	case PhaseMode_MinInputCurrent:
 		//Vsp -= modMpptsettings->PO_Stepsize;
-		Vsp = 1e3*control_get_regulated_voltage() - (0.5*modMpptsettings->PO_Stepsize);
+		Vsp = 1e3*control_get_regulated_voltage() - (0.1*modMpptsettings->PO_Stepsize);
 		control_set_setpoint(Vsp );
 		pv = v;
-		pp=p;
+		pp = p;
 		return;
 	case PhaseMode_TD:
 	case PhaseMode_CIC:
