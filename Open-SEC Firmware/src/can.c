@@ -335,9 +335,9 @@ void modCANtask(void) {
 		uint8_t data[8];
 		int32_t index = 0;
 
-		buffer_append_float16(data, meter.Vlow, 2.5e2f, &index);
+		buffer_append_float16(data, meter.Vlow, 1e2f, &index);
 		buffer_append_float16(data, meter.Iind, 2.0e3f, &index);
-		buffer_append_float16(data, meter.Vhigh, 2.5e2f, &index);
+		buffer_append_float16(data, meter.Vhigh, 1e2f, &index);
 		buffer_append_float16(data, meter.Ihigh, 2.0e3f, &index);
 
 		modCANTransmitStandardID(modCANGetCANID(canid, CAN_PACKET_Power), data,
