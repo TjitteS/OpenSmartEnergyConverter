@@ -29,16 +29,16 @@ OPAMP_HandleTypeDef hopamp3;
 modConfig_t defaultConvig = {
 		{//CalibrationData_t	calData;
 				"SEC-B80-8A",
-				"V0.2.1",
+				"V0.2",
 				"0000000",
 				false,
-				-8.6f,//float InputCurrentGain;// A/V
+				-4.3f,//float InputCurrentGain;// A/V
 				0.0f,	//float InputCurrentOffset;//mA
 
 				30.9f,	//float InputVoltageGain;// V/V
 				0.0f,//float InputVoltageOffset;//mV
 
-				8.6f,	//float OutputCurrentGain;//  A/V
+				4.3f,	//float OutputCurrentGain;//  A/V
 				0.0f,	//float OutputCurrentOffset;//mA
 
 				30.9f,	//float OutputVoltageGain;// V/V
@@ -49,7 +49,7 @@ modConfig_t defaultConvig = {
 				25.0f,	//float Temperature_Ref;//25.0f
 
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0xa225,	//uint16_t calcrc; //Checksum
+				0xf346,	//uint16_t calcrc; //Checksum
 		},{//ConverterSettings_t settings;
 				0.99f, //float meterfilterCoeficient;
 				80.0e3f, //float HighSideVoltageLimitSoft;		// mV
