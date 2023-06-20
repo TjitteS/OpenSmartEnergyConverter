@@ -22,16 +22,21 @@
 #include "stdio.h"
 
 #define FW_VERSION_MAJOR 1
-#define FW_VERSION_MINOR 1
+#define FW_VERSION_MINOR 2
 
 #if defined(HW_REBOOST)
 #include "hw_reboost.h"
 
 #elif defined(HW_SECB175)
 #include "secb.h"
+
+#elif defined(HW_SECB1754A)
+#include "secb1754a.h"
+
 #else
 #error "No hardware defined."
 #endif
+
 
 #ifndef HW_TOPOLOGY_BOOST
 #ifndef HW_TOPOLOGY_BUCK
