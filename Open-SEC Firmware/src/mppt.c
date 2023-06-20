@@ -104,8 +104,14 @@ void modMPPTtask() {
 
 			break;
 		case MpptState_ConstantVoltage:
-		default:
 			break;
+
+		case MpptState_Disable:
+		default:
+			modConverterPWMOutputDisable();
+			break;
+
+
 
 		}
 	}
@@ -235,10 +241,13 @@ void modMpptSetMode(modMPPTmode_t mode){
 	case MpptMode_ConstantVoltage:
 		currentmode = MpptState_ConstantVoltage;
 		break;
-	default:
 	case MpptMode_PO:
 		currentmode = MpptState_init;
 		break;
+
+	default:
+	case MpptMode_Disable:
+		currentmode = MpptState_Disable;
 	}
 }
 

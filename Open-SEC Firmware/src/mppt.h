@@ -32,6 +32,7 @@ float mppt_is[MPPT_SWEEP_SIZE];
 
 
 typedef enum {
+	MpptState_Disable,
 	MpptState_init,
 	MpptState_PO,
 	MpptState_SweepStart,
@@ -41,6 +42,7 @@ typedef enum {
 }modMPPTstate_t;
 
 typedef enum {
+	MpptMode_Disable,
 	MpptMode_PO,
 	MpptMode_ConstantVoltage,
 }modMPPTmode_t;

@@ -132,7 +132,7 @@ void modCANinit(modCanSettings_t *s) {
 	}
 
 	sFilterConfig.IdType = FDCAN_EXTENDED_ID;
-	sFilterConfig.FilterIndex = 0;
+	sFilterConfig.FilterIndex = 1;
 	sFilterConfig.FilterType = FDCAN_FILTER_RANGE;
 	sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
 	sFilterConfig.FilterID1 = modCANGetCANEXID(canid,
@@ -190,7 +190,7 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 	uint16_t destinaitonId;
 
 	if (rxmsg->rxmsg.IdType == FDCAN_STANDARD_ID) {
-		destinaitonId = (uint16_t) rxmsg->rxmsg.Identifier & 0x7F0;
+		destinaitonId = (uint16_t) (rxmsg->rxmsg.Identifier & 0x7F0) >> 4;
 	} else {
 		destinaitonId = (uint16_t) (rxmsg->rxmsg.Identifier & 0x7F00) >> 8;
 	}
@@ -259,6 +259,10 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 				modCommandsSetSendFunction(modCANSendPacketWrapper);
 				modCommandsProcessPacket(rxmsg->data + 2, DLC - 2);
 			}
+			break;
+
+		case CAN_CMD_SETMODE:
+			modMpptSetMode((modMPPTmode_t)rxmsg->data[0]);
 			break;
 
 		default:
