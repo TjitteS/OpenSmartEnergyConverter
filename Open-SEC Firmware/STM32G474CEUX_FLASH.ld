@@ -160,13 +160,13 @@ SECTIONS
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
 
-    . = ALIGN(4);
+    . = ALIGN(8);
     _edata = .;        /* define a global symbol at data end */
     
   } >RAM AT> FLASH
 
   /* Uninitialized data section into "RAM" Ram type memory */
-  . = ALIGN(4);
+  . = ALIGN(8);
   .bss :
   {
     /* This is used by the startup in order to initialize the .bss section */
@@ -192,6 +192,7 @@ SECTIONS
     . = ALIGN(8);
   
   } >RAM
+  
   
  .erom_flash (NOLOAD) :
   {
@@ -221,6 +222,8 @@ SECTIONS
     . = ALIGN(4);
   } > APP
   
+
+  
   /* Remove information from the compiler libraries */
   /DISCARD/ :
   {
@@ -228,6 +231,8 @@ SECTIONS
     libm.a ( * )
     libgcc.a ( * )
   }
-
+  
+  
   .ARM.attributes 0 : { *(.ARM.attributes) }
+  
 }
