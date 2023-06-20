@@ -34,6 +34,7 @@ typedef enum {
 	CAN_PACKET_PROCESS_SHORT_BUFFER,
 
 	//TODO Add can interface commands here
+	CAN_CMD_SETMODE,
 
 	CAN_PACKET_MSGCOUNT,
 } CAN_PACKET_ID;

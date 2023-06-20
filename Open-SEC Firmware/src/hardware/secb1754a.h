@@ -15,16 +15,16 @@
  */
  
 
-#ifndef HARDWARE_SECB_H_
-#define HARDWARE_SECB_H_
-#ifdef HW_SECB175
+#ifndef HARDWARE_SECB1754A_H_
+#define HARDWARE_SECB1754A_H_
+
+#ifdef HW_SECB1754A
 
 #include "stm32g4xx_hal.h"
 #include "stdio.h"
 
-
 #ifndef HW_NAME
-#define HW_NAME "SEC-B175-7A"
+#define HW_NAME "SEC-B175-4A"
 #endif
 
 #define HW_TOPOLOGY_BOOST
@@ -51,21 +51,19 @@
 //Limits
 #define HW_LIMIT_HS_VOLTAGE_HARD 184210
 #define HW_LIMIT_LS_VOLTAGE_HARD 184210
-#define HW_LIMIT_HS_CURRENT_HARD 12000
-#define HW_LIMIT_LS_CURRENT_HARD 12000
+#define HW_LIMIT_HS_CURRENT_HARD 7000
+#define HW_LIMIT_LS_CURRENT_HARD 7000
 
-#define HW_SWITCHINGFREQUENCY  36
-#define HW_DEADTIMERISING      111
-#define HW_DEADTIMEFALLING     40
-#define HW_L                   100e-6
-#define HW_RLINT               30e-6
+//#define LC
+#define HW_SWITCHINGFREQUENCY  26
+#define HW_DEADTIMERISING      180
+#define HW_DEADTIMEFALLING     37
+#define HW_L                   248e-6
+#define HW_RLINT               60e-3
 
 #define HW_ADC_DELAY           0.8f
 
-
-
-#define HW_CONTROLLERFREQUENCY 25
-
+#define HW_CONTROLLERFREQUENCY 20
 
 #define HW_CLOW                220e-6
 #define HW_CHIGH               440e-6

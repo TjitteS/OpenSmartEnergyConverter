@@ -37,6 +37,7 @@ modConfig_t *acktiveConfig;
 
 //(Re)Initialize all parts that require initialization based on configuration memory.
 void main_init_after_config() {
+	modTestingInit(&acktiveConfig->settings);
 	modCANinit(&acktiveConfig->cansettings);
 	control_init(&acktiveConfig->settings, &acktiveConfig->calData);
 	modMPPTinit(&acktiveConfig->mpptsettings);
@@ -63,7 +64,7 @@ int main(void) {
 	acktiveConfig = modConfigInit();
 
 	modUARTInit();
-	modTestingInit();
+
 	main_init_after_config();
 
 
