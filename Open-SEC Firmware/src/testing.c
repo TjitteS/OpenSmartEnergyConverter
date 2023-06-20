@@ -38,6 +38,7 @@ float mpp;
 float lossedEnergy = 0;
 float runtime= 0;
 float lossedPowerAverage=0;
+float Vbat;
 
 float * cvic;
 modTestS_t test;
@@ -46,8 +47,8 @@ uint32_t lastTestTick = 0;
 modTestingSolarCell_t cell;
 uint32_t timestep = 0;
 
-extern ConverterSettings_t settings;
-extern CalibrationData_t cal;
+//extern ConverterSettings_t settings;
+//extern CalibrationData_t cal;
 
 bool curvestate;
 
@@ -70,17 +71,27 @@ float getMpp(float* IVc){
 	return mpp;
 }
 
-void modTestingInit(){
+void modTestingInit(const ConverterSettings_t* s){
 
 #if defined(HW_TOPOLOGY_BOOST)
-#define Vbat 120.0f
-	modTestingPVInit(&cell, 130*0.649f, 130*0.742f, 6.5f, 6.7f, 1000);
-	simstate.Vlow=30.0f;
-	simstate.Vhigh=Vbat;
+	float Isc = s->LowSideCurrentMaxLimitSoft * 0.8 / 1e3;
+	Vbat = s->HighSideVoltageLimitSoft *0.8 / 1e3;
+	//float Isc = 6.0f;
+	//Vbat = 80.0f *0.8;
+
+	float Voc = Vbat /2;
+	int ncell = Voc / 0.742f;
+
+	modTestingPVInit(&cell, ncell*0.649f, ncell*0.742f, 6.5f, 6.7f, 1000 / 6.7 * Isc);
+
+	simstate.Vlow = Voc/2;
+	simstate.Vhigh = Vbat;
+
 
 #elif defined(HW_TOPOLOGY_BUCK)
-#define Vbat 20.0f
+
 	modTestingPVInit(&cell, 70*0.649f, 70*0.742f, 1.3f, 1.5f, 1000);
+	Vbat = config.settings.LowSideVoltageLimitSoft * 0.8;
 	simstate.Vlow=Vbat;
 	simstate.Vhigh=60.0f;
 #endif

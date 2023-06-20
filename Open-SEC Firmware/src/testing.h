@@ -46,7 +46,7 @@ typedef struct{
 	float Voc;
 }modTestingSolarCell_t;
 
-void modTestingInit(void);
+void modTestingInit(const ConverterSettings_t* s);
 void modTestingTask(void);
 
 void modTestingModel(float* x, float* dx, float*u);
