@@ -40,3 +40,6 @@
 
 /Open-SEC Bootloader/Debug
 /Open-SEC Bootloader/Debug/*
+
+PackBinaries.bat
+*.zip

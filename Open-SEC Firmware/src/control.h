@@ -139,6 +139,10 @@ typedef struct ConverterSettings_t {
 	float TemperatureLimitEnd;
 
 	bool outputEnable;
+
+	bool outputEnalbeOnStartup;
+	uint32_t startupDelay;
+
 }ConverterSettings_t;
 
 

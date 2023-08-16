@@ -34,6 +34,7 @@ float mppt_is[MPPT_SWEEP_SIZE];
 typedef enum {
 	MpptState_Disable,
 	MpptState_init,
+	MpptState_delay,
 	MpptState_PO,
 	MpptState_SweepStart,
 	MpptState_SweepStartupdelay,

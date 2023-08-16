@@ -124,6 +124,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			acktiveConfig->settings.TemperatureLimitStart		= buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.TemperatureLimitEnd			= buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.outputEnable = buffer_get_int8(data,&ind);
+			acktiveConfig->settings.outputEnalbeOnStartup  = buffer_get_int8(data,&ind);
+			acktiveConfig->settings.startupDelay = (uint32_t)buffer_get_uint16(data, &ind);
 
 			acktiveConfig->mpptsettings.PO_Stepsize = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.PO_Timestep = (uint32_t)buffer_get_uint16(data, &ind);
@@ -169,8 +171,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.TemperatureLimitStart ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.TemperatureLimitEnd ,&ind);
 			buffer_append_int8		(modCommandsSendBuffer,acktiveConfig->settings.outputEnable          	 ,&ind);
-
-
+			buffer_append_int8		(modCommandsSendBuffer,acktiveConfig->settings.outputEnalbeOnStartup        	 ,&ind);
+			buffer_append_uint16	(modCommandsSendBuffer, acktiveConfig->settings.startupDelay, &ind);
 
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Stepsize,&ind);
 			buffer_append_uint16	(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Timestep, &ind);

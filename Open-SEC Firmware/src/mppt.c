@@ -40,34 +40,43 @@ float mpptSweepSP;
 int oscillationnumber = 0;
 float changedStepSize = 0;
 bool justjumped = 0;
+uint32_t tsweepstart;
 
-//float max = 21.0f;
-//float min = 10.0f;
-//int oscillationthreshold = 20;
-//float maxgradient = 5.0f;
-//float powerthreshold = 5.0f;
+uint32_t tinit;
 
-void modMPPTinit(modMPPTsettings_t *settings) {
-	modMpptsettings = settings;
-	currentmode = MpptState_init;
+
+void modMPPTinit(modMPPTsettings_t *s) {
+	modMpptsettings = s;
+	modConverterPWMOutputDisable();
+
+	if (settings.outputEnalbeOnStartup){
+		currentmode = MpptState_init;
+	} else{
+		currentmode = MpptState_Disable;
+	}
+
 	modConverterPWMOutputDisable();
 
 	MpptLastAckion = MpptAcktionState_Init;
 }
-
-uint32_t tsweepstart;
 
 
 void modMPPTtask() {
 	if (modDelayTick1ms(&lastsweep, modMpptsettings->PO_Timestep)) {
 		switch(currentmode){
 		case MpptState_init:
-
-			control_set_setpoint(control_get_regulated_voltage());
-			currentmode = MpptState_PO;
-			modConverterPWMOutputEnable();
-
+			tinit = HAL_GetTick();
+			currentmode = MpptState_delay;
 			break;
+
+		case MpptState_delay:
+			if(HAL_GetTick() - tinit > settings.startupDelay){
+				control_set_setpoint(control_get_regulated_voltage());
+				currentmode = MpptState_PO;
+				modConverterPWMOutputEnable();
+			}
+
+
 		case MpptState_PO:
 			modMPPTPerturbAndObserve();
 			//phase.Vsp = 10000;
