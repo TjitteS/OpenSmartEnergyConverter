@@ -31,15 +31,10 @@ In the tool, an accurate lab power supply can be used to calibrate the voltage a
 
 ![Tool](Pictures/tool02.png)
 
-### Power electronics ###
-The topology is a boost converter with GaN FET switches. Earlier prototypes used [Efficient Power Conversion](https://epc-co.com/epc)'s GaN devices; more specifically the EPC2010C. While this manufacturer has some great publications on how to use GaN FETs and how to model their power losses, I found the devices themselves very sensitive to faults. Events like current spikes or load disconnects could easily destroy these devices. The switch to [Gan-Systems](https://gansystems.com/) was made when the new design requirements allowed for lower output voltages. Gan-Systems can provide devices that are more easily cooled and integrated on a PCB, but only for 100V or 600V ratings. So far, no GaN-System FET was destroyed in the development process of this project. Which might say something about the reliability of the devices, or the maturity of the converter. 
-
-
 ### Measurement and control ###
 The control system for this converter is a fully digital system based on the stm32G474 MCU. In the software, relatively simple proportional controllers are used to stabilize the system, and current and voltage limits are implemented such that the system can (hopefully) never destroy itself. 
 
 The digital controller presents the biggest limitation to the minimal power inductor value and the bandwidth of the converter. Hence the faster the controller is, the faster it can respond to disturbances. That is why the controller is made relatively simple, at the cost of being less accurate. Future work to the controller includes making it bi-directional, making use of hardware acceleration, and more accurate controllers. 
-
 
 # Limitations #
 ### voltage rating ###
