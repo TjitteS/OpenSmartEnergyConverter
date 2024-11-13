@@ -28,7 +28,7 @@
 #include "hw_reboost.h"
 
 #elif defined(HW_SECB175)
-#include "secb.h"
+#include <secb1757a.h>
 
 #elif defined(HW_SECB1754A)
 #include "secb1754a.h"

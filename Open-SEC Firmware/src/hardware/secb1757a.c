@@ -1,5 +1,5 @@
 /*
- **	Copyright 2023 Tjitte van der Ploeg, tjitte@tpee.nl
+ **	Copyright 2024 Tjitte van der Ploeg, tjitte@tpee.nl
  **
  **	This file is part of the OpenBoost firmware.
  **	The Open-SEC firmware is free software: you can redistribute
@@ -13,8 +13,7 @@
  **	You should have received a copy of the GNU General Public License along
  **	with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#include "secb.h"
+#include <secb1757a.h>
 #include "stm32g4xx_hal.h"
 #include "stdbool.h"
 #include "config.h"
