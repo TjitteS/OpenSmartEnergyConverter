@@ -83,6 +83,9 @@ typedef enum {
 	CONM_MPPT_SetOutputCurrent,
 	CONM_MPPT_SetInputCurrent,
 	CONM_MPPT_SetInputVoltage,
+	COMM_MPPT_SCOPE_RUN,
+	COMM_MPPT_SCOPE_STEP,
+	COMM_MPPT_SCOPE_GET_DATA,
 
 } COMM_PACKET_ID;
 

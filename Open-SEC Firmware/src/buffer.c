@@ -108,6 +108,7 @@ void buffer_append_float32(uint8_t* buffer, float number, float scale, int32_t *
  * floating point numbers in a fully defined manner.
  */
 void buffer_append_float32_auto(uint8_t* buffer, float number, int32_t *index) {
+	/*
 	int e = 0;
 	float sig = frexpf(number, &e);
 	float sig_abs = fabsf(sig);
@@ -124,7 +125,16 @@ void buffer_append_float32_auto(uint8_t* buffer, float number, int32_t *index) {
 		res |= 0x80000000;
 	}
 
-	buffer_append_uint32(buffer, res, index);
+	buffer_append_uint32(buffer, res, index);*/
+	union{
+		float n;
+		uint8_t bytes[4];
+		uint32_t asuint;
+	} number_union;
+
+	number_union.n = number;
+
+	buffer_append_uint32(buffer, number_union.asuint, index);
 }
 
 int8_t buffer_get_int8(const uint8_t *buffer, int32_t *index) {
@@ -180,6 +190,9 @@ float buffer_get_float32(const uint8_t *buffer, float scale, int32_t *index) {
 }
 
 float buffer_get_float32_auto(const uint8_t *buffer, int32_t *index) {
+
+
+	/*
 	uint32_t res = buffer_get_uint32(buffer, index);
 
 	int e = (res >> 23) & 0xFF;
@@ -198,5 +211,15 @@ float buffer_get_float32_auto(const uint8_t *buffer, int32_t *index) {
 		sig = -sig;
 	}
 
-	return ldexpf(sig, e);
+	return ldexpf(sig, e);*/
+
+	union{
+		float n;
+		uint8_t bytes[4];
+		uint32_t asuint;
+	} number_union;
+
+	number_union.asuint = buffer_get_uint32(buffer, index);
+
+	return number_union.n;
 }

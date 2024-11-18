@@ -25,6 +25,9 @@
 #include "main.h"
 #include "math.h"
 
+#define CONVERTER_SCOPE_CHANNELS	2
+#define CONVERTER_SCOPE_SAMPLESIZE	4096
+
 typedef enum PhaseMode_t{
 	PhaseMode_CIV,
 	PhaseMode_CIC,
@@ -176,6 +179,45 @@ typedef struct{
 	float Eff;
 }ConverterMueasurements_t;
 
+
+typedef enum{
+	SourceIndex_Iind,
+	SourceIndex_Ihigh,
+	SourceIndex_Vlow,
+	SourceIndex_Vhigh,
+	SourceIndex_Ilow,
+	SourceIndex_Power,
+	SourceIndex_Eff,
+	SourceIndex_Iind_Filtered,
+	SourceIndex_Ihigh_Filtered,
+	SourceIndex_Vlow_Filtered,
+	SourceIndex_Vhigh_Filtered,
+	SourceIndex_Ilow_Filtered,
+	SourceIndex_Power_Filtered,
+	SourceIndex_Eff_Filtered,
+
+}ConverterScopeSourceIndex_t;
+
+
+typedef struct{
+	ConverterScopeSourceIndex_t source;
+	float samples[CONVERTER_SCOPE_SAMPLESIZE];
+}ConverterScopeChannel;
+
+typedef struct{
+	int samples;
+	int divider;
+	int dividerindex;
+	int pretrigger;
+	int writeindex;
+	int triggerindex;
+	bool running;
+	bool trigered;
+	ConverterScopeChannel channel[CONVERTER_SCOPE_CHANNELS];
+	float samplerate;
+}ConverterScope_t;
+
+extern ConverterScope_t scope;
 extern ConverterMueasurements_t meter;
 ConverterPhase_t phase;
 
@@ -215,4 +257,6 @@ float control_get_setpoint(void);
 float control_get_regulated_voltage();
 float control_get_regulated_current();
 
+void scope_trigger();
+void scope_start();
 #endif
