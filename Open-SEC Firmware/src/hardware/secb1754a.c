@@ -27,10 +27,10 @@ extern ADC_HandleTypeDef hadc3;
 extern ADC_HandleTypeDef hadc4;
 extern ADC_HandleTypeDef hadc5;
 
-#ifdef HW_SECB1754A
+#ifdef HW_SECB175_4A
 
 modConfig_t defaultConvig = {
-		{//CalibrationData_t	calData;
+		.calData = (CalibrationData_t){
 				"SEC-B175-4A",
 				"0002301",
 				"0000000",
@@ -49,28 +49,35 @@ modConfig_t defaultConvig = {
 				25.0f,	//float Temperature_Ref;//25.0f
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
 				0xa7ef,	//uint16_t calcrc; //Checksum
-		},{//ConverterSettings_t settings;
-				0.9f, 	// float meterfilterCoeficient;
-				147.0e3f, 	// float HighSideVoltageLimitSoft;	 mV
-				95.0e3f,	// float LowSideVoltageLimitSoft;	 mV
-				7.5e3f, 	// float HighSideCurrentLimitSoft;	 mA
-				7.5e3f, 	// float LowSideCurrentMaxLimitSoft, mA
-				-100.0f, 		// float LowSideCurrentMinLimitSoft, mA
-				-500.0f,		// float PhaseHighSideEnableCurrent, mA
-				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius
-				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
-				false,//bool outputEnable;
-		},{//modMPPTsettings_t mpptsettings;
-				200.0f, //float PO_Stepsize; mV
-				30, //uint32_t PO_Timestep; ms
-				1.5f,  // float P&O Step Size Gain;
-				0, //float jump_PowerThreshold;
-				0, //int jump_Rate;
-		},{//modCanSettings_t cansettings;
-				250,//int baudrate; kbps
-				0.75,//float samplepoint;
-				32,//uint16_t generalCanId;
 		},
+
+		.settings = (ConverterSettings_t){//ConverterSettings_t settings;
+				.meterfilterCoeficient 			=  0.93f,	// %
+				.HighSideVoltageLimitSoft    	=  147.00e3f,	// mV
+				.LowSideVoltageLimitSoft 		=  90.00e3f,	// mV
+				.HighSideCurrentLimitSoft 		=  4.00e3f,	// mA
+				.LowSideCurrentMaxLimitSoft 	=  4.00e3f, // mA
+				.LowSideCurrentMinLimitSoft 	= -0.30e3f,	// mA
+				.PhaseHighSideEnableCurrent 	= -0.50e3f, // mA
+				.TemperatureLimitStart 			=  80.00f, 	// C
+				.TemperatureLimitEnd 			=  85.00f,	// C
+				.outputEnable 					=  false,	// Bool
+				.outputEnalbeOnStartup			=  true,	// Bool
+				.startupDelay                 	=  0,		// ms
+			},
+		.mpptsettings = (modMPPTsettings_t){
+				.PO_Stepsize					=  250.0f,	// mV
+				.PO_Timestep					=  5,		// ms
+				.PO_StepSizeGain 				=  1.0f,	// float P&O Step Size Gain;
+				.jump_PowerThreshold 			=  50, 		//float jump_PowerThreshold;
+				.jump_Rate 						=  0, 		//int jump_Rate;
+			},
+		.cansettings = (modCanSettings_t){
+				.baudrate 						=  250,  	// kbps
+				.samplepoint					=  0.75f,	// %
+				.generalCanId					=  32,
+			},
+
 };
 
 

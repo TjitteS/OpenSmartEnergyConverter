@@ -18,7 +18,7 @@
 #ifndef HARDWARE_SECB1754A_H_
 #define HARDWARE_SECB1754A_H_
 
-#ifdef HW_SECB1754A
+#ifdef HW_SECB175_4A
 
 #include "stm32g4xx_hal.h"
 #include "stdio.h"
@@ -42,10 +42,10 @@
 
 
 //Filters
-#define VOLTAGE_IN_FORGETING_FACTOR		0.8f
-#define VOLTAGE_OUT_FORGETING_FACTOR	0.8f
+#define VOLTAGE_IN_FORGETING_FACTOR		0.0f
+#define VOLTAGE_OUT_FORGETING_FACTOR	0.0f
 #define CURRENT_IN_FORGETING_FACTOR     0.0f
-#define CURRENT_PV_FORGETING_FACTOR		0.99f
+#define CURRENT_PV_FORGETING_FACTOR		0.93f
 #define TEMP_FORGETING_FACTOR			0.95f
 
 //Limits
@@ -53,6 +53,7 @@
 #define HW_LIMIT_LS_VOLTAGE_HARD 184210
 #define HW_LIMIT_HS_CURRENT_HARD 7000
 #define HW_LIMIT_LS_CURRENT_HARD 7000
+#define HW_MAX_CURRENT_SETTING   5000.0f
 
 #define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.15f
 
@@ -70,7 +71,7 @@
 #define HW_CLOW                220e-6
 #define HW_CHIGH               440e-6
 
-#define HW_Q                   0.99
+#define HW_Q                   0.5
 #define HW_KLIM                0.4
 
 //Pinout

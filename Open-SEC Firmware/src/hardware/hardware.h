@@ -22,16 +22,19 @@
 #include "stdio.h"
 
 #define FW_VERSION_MAJOR 1
-#define FW_VERSION_MINOR 3
+#define FW_VERSION_MINOR 5
 
 #if defined(HW_REBOOST)
 #include "hw_reboost.h"
 
-#elif defined(HW_SECB175)
+#elif defined(HW_SECB175_7A)
 #include <secb1757a.h>
 
-#elif defined(HW_SECB1754A)
+#elif defined(HW_SECB175_4A)
 #include "secb1754a.h"
+
+#elif defined(HW_SECB175_10A)
+#include "secb17510a.h"
 
 #else
 #error "No hardware defined."

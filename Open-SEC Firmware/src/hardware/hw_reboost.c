@@ -27,7 +27,7 @@ OPAMP_HandleTypeDef hopamp2;
 OPAMP_HandleTypeDef hopamp3;
 
 modConfig_t defaultConvig = {
-		{//CalibrationData_t	calData;
+		.calData = (CalibrationData_t){
 				"SEC-B80-8A",
 				"V0.2",
 				"0000000",
@@ -50,27 +50,33 @@ modConfig_t defaultConvig = {
 
 				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
 				0xf346,	//uint16_t calcrc; //Checksum
-		},{//ConverterSettings_t settings;
-				0.99f, //float meterfilterCoeficient;
-				80.0e3f, //float HighSideVoltageLimitSoft;		// mV
-				80.0e3f,//float LowSideVoltageLimitSoft;		// mV
-				8.0e3f, //float HighSideCurrentLimitSoft;		// mA
-				8.0e3f, //float LowSideCurrentMaxLimitSoft;  	//Minimum input current
-				10.0f, //float LowSideCurrentMinLimitSoft;	//Minimum input current
-				10.0f,//float PhaseHighSideEnableCurrent;	// mA
-				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius
-				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
-				false,//bool outputEnable;
-		},{//modMPPTsettings_t mpptsettings;
-				100.0f, //float PO_Stepsize; mV
-				30, //uint32_t PO_Timestep; ms
-				2.0, //float P&O Step Size Gain;
-				5, //float jump_PowerThreshold;
-				0, //int jump_Rate;
-		},{//modCanSettings_t cansettings;
-				250,//int baudrate; kbps
-				0.75,//float samplepoint;
-				32,//uint16_t generalCanId;
+		},
+
+		.settings = (ConverterSettings_t){//ConverterSettings_t settings;
+				.meterfilterCoeficient 			=  0.93f,	// %
+				.HighSideVoltageLimitSoft    	=  80.00e3f,// mV
+				.LowSideVoltageLimitSoft 		=  80.00e3f,// mV
+				.HighSideCurrentLimitSoft 		=  9.00e3f,	// mA
+				.LowSideCurrentMaxLimitSoft 	=  9.00e3f, // mA
+				.LowSideCurrentMinLimitSoft 	= -0.30e3f,	// mA
+				.PhaseHighSideEnableCurrent 	= -0.50e3f, // mA
+				.TemperatureLimitStart 			=  80.00f, 	// C
+				.TemperatureLimitEnd 			=  85.00f,	// C
+				.outputEnable 					=  false,	// Bool
+				.outputEnalbeOnStartup			=  true,	// Bool
+				.startupDelay                 	=  0,		// ms
+		},
+		.mpptsettings = (modMPPTsettings_t){
+				.PO_Stepsize					=  100.0f,	// mV
+				.PO_Timestep					=  5,		// ms
+				.PO_StepSizeGain 				=  1.0f,	// float P&O Step Size Gain;
+				.jump_PowerThreshold 			=  50, 		//float jump_PowerThreshold;
+				.jump_Rate 						=  0, 		//int jump_Rate;
+		},
+		.cansettings = (modCanSettings_t){
+				.baudrate 						=  250,  	// kbps
+				.samplepoint					=  0.75f,	// %
+				.generalCanId					=  32,
 		},
 };
 

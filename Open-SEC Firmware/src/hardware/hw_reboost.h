@@ -38,6 +38,7 @@
 #define HW_LIMIT_LS_VOLTAGE_HARD 90000
 #define HW_LIMIT_HS_CURRENT_HARD 13000
 #define HW_LIMIT_LS_CURRENT_HARD 13000
+#define HW_MAX_CURRENT_SETTING   9000.0f
 
 #define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.15f
 
@@ -50,7 +51,7 @@
 #define HW_CLOW                100e-6f
 #define HW_CHIGH               600e-6f
 #define HW_RLINT               30e-3f
-#define HW_Q                   1.0
+#define HW_Q                   0.5
 #define HW_KLIM                0.4
 
 
@@ -59,11 +60,11 @@
 
 
 //Filters
-#define VOLTAGE_IN_FORGETING_FACTOR		0.8f
-#define VOLTAGE_OUT_FORGETING_FACTOR	0.8f
-#define CURRENT_IN_FORGETING_FACTOR     0.4f
-#define CURRENT_PV_FORGETING_FACTOR		0.99f
-#define TEMP_FORGETING_FACTOR			0.9f
+#define VOLTAGE_IN_FORGETING_FACTOR		0.0f
+#define VOLTAGE_OUT_FORGETING_FACTOR	0.0f
+#define CURRENT_IN_FORGETING_FACTOR     0.0f
+#define CURRENT_PV_FORGETING_FACTOR		0.93f
+#define TEMP_FORGETING_FACTOR			0.95f
 
 
 
