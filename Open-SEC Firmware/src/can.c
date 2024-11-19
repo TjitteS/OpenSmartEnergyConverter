@@ -17,8 +17,8 @@ uint16_t canid = 0;
 modCanSettings_t *cansettings;
 uint8_t modCANRxBufferLastID;
 
-#define MODCAN_RXBUFFER_SIZE 256
-uint8_t modCANRxBuffer[MODCAN_RXBUFFER_SIZE];
+#define MODCAN_RXBUFFER_SIZE 512
+uint8_t modCANRxBuffer[RX_CAN_BUFFER_SIZE];
 
 extern ConverterPhase_t phase;
 extern ConverterMueasurements_t meter;
