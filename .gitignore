@@ -33,6 +33,10 @@
 /Open-SEC Firmware/SEC-B175-7A/*
 /Open-SEC Firmware/SEC-B175-7A-SIM/
 /Open-SEC Firmware/SEC-B175-7A-SIM/*
+/Open-SEC Firmware/SEC-B175-10A
+/Open-SEC Firmware/SEC-B175-10A/*
+/Open-SEC Firmware/SEC-B175-10A-SIM/
+/Open-SEC Firmware/SEC-B175-10A-SIM/*
 /Open-SEC Firmware/SEC-B80-8A
 /Open-SEC Firmware/SEC-B80-8A/*
 /Open-SEC Firmware/SEC-B80-8A-SIM/
@@ -40,6 +44,8 @@
 
 /Open-SEC Bootloader/Debug
 /Open-SEC Bootloader/Debug/*
+/Open-SEC Bootloader/Release
+/Open-SEC Bootloader/Release/*
 
 PackBinaries.bat
 *.zip
