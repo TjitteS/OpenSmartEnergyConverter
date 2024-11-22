@@ -1,3 +1,18 @@
+/*
+ **	Copyright 2023 Tjitte van der Ploeg, tjitte@tpee.nl
+ **
+ **	This file is part of the OpenBoost firmware.
+ **	The Open-SEC firmware is free software: you can redistribute
+ **	it and/or modify it under the terms of the GNU General Public License
+ **	as published by the Free Software Foundation, either version 3 of the
+ **	License, or (at your option) any later version. The Open-SEC firmware is
+ **	distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ **	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ **	PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ **
+ **	You should have received a copy of the GNU General Public License along
+ **	with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef INC_MODCOVERTER_H_
 #define INC_MODCOVERTER_H_
@@ -9,6 +24,9 @@
 #include "stdbool.h"
 #include "main.h"
 #include "math.h"
+
+#define CONVERTER_SCOPE_CHANNELS	2
+#define CONVERTER_SCOPE_SAMPLESIZE	4096
 
 typedef enum PhaseMode_t{
 	PhaseMode_CIV,
@@ -161,6 +179,45 @@ typedef struct{
 	float Eff;
 }ConverterMueasurements_t;
 
+
+typedef enum{
+	SourceIndex_Iind,
+	SourceIndex_Ihigh,
+	SourceIndex_Vlow,
+	SourceIndex_Vhigh,
+	SourceIndex_Ilow,
+	SourceIndex_Power,
+	SourceIndex_Eff,
+	SourceIndex_Iind_Filtered,
+	SourceIndex_Ihigh_Filtered,
+	SourceIndex_Vlow_Filtered,
+	SourceIndex_Vhigh_Filtered,
+	SourceIndex_Ilow_Filtered,
+	SourceIndex_Power_Filtered,
+	SourceIndex_Eff_Filtered,
+
+}ConverterScopeSourceIndex_t;
+
+
+typedef struct{
+	ConverterScopeSourceIndex_t source;
+	float samples[CONVERTER_SCOPE_SAMPLESIZE];
+}ConverterScopeChannel;
+
+typedef struct{
+	int samples;
+	int divider;
+	int dividerindex;
+	int pretrigger;
+	int writeindex;
+	int triggerindex;
+	bool running;
+	bool trigered;
+	ConverterScopeChannel channel[CONVERTER_SCOPE_CHANNELS];
+	float samplerate;
+}ConverterScope_t;
+
+extern ConverterScope_t scope;
 extern ConverterMueasurements_t meter;
 ConverterPhase_t phase;
 
@@ -200,4 +257,6 @@ float control_get_setpoint(void);
 float control_get_regulated_voltage();
 float control_get_regulated_current();
 
+void scope_trigger();
+void scope_start();
 #endif

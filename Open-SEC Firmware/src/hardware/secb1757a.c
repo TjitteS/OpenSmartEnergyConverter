@@ -1,5 +1,5 @@
 /*
- **	Copyright 2023 Tjitte van der Ploeg, tjitte@tpee.nl
+ **	Copyright 2024 Tjitte van der Ploeg, tjitte@tpee.nl
  **
  **	This file is part of the OpenBoost firmware.
  **	The Open-SEC firmware is free software: you can redistribute
@@ -13,51 +13,50 @@
  **	You should have received a copy of the GNU General Public License along
  **	with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#include "hardware.h"
-#include "hw_reboost.h"
-#include "stm32g4xx_hal.h"
-#include "stdio.h"
-#include "config.h"
-#include "stdbool.h"
 
-#ifdef HW_REBOOST
+#ifdef HW_SECB175_7A
+
+#include <secb1757a.h>
+#include "stm32g4xx_hal.h"
+#include "stdbool.h"
+#include "config.h"
 
 OPAMP_HandleTypeDef hopamp2;
 OPAMP_HandleTypeDef hopamp3;
+extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
+extern ADC_HandleTypeDef hadc3;
+extern ADC_HandleTypeDef hadc4;
+extern ADC_HandleTypeDef hadc5;
+
 
 modConfig_t defaultConvig = {
-		.calData = (CalibrationData_t){
-				"SEC-B80-8A",
-				"V0.2",
-				"0000000",
-				false,
-				-4.3f,//float InputCurrentGain;// A/V
-				0.0f,	//float InputCurrentOffset;//mA
-
-				30.9f,	//float InputVoltageGain;// V/V
-				0.0f,//float InputVoltageOffset;//mV
-
-				4.3f,	//float OutputCurrentGain;//  A/V
-				0.0f,	//float OutputCurrentOffset;//mA
-
-				30.9f,	//float OutputVoltageGain;// V/V
-				0.0f,	//float OutputVoltageOffset;//mV
-
-				4100.0f,	//float Temperature_B;//4000.0f
-				100.0f,	//float Temperature_R;//100000.0f
-				25.0f,	//float Temperature_Ref;//25.0f
-
-				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0xf346,	//uint16_t calcrc; //Checksum
-		},
+		.calData = (CalibrationData_t){//CalibrationData_t	calData;
+				.HardwareName 					=  "SEC-B175-7A",
+				.HardwhareVersionString 		=  "002405",
+				.SerialString 					=  "000000",
+				.calibrated 					=  false,
+				.InputCurrentGain 				=  4.67f,	// A/V
+				.InputCurrentOffset 			=  0.00f,	// mA
+				.InputVoltageGain 				=  78.90f,	// V/V
+				.InputVoltageOffset 			=  106.20f,	// mV
+				.OutputCurrentGain 				= -4.82f,	// A/V
+				.OutputCurrentOffset 			=  0.00f,	// mA
+				.OutputVoltageGain 				=  78.90f,	// V/V
+				.OutputVoltageOffset 			=  106.15f,	// mV
+				.Temperature_B 					=  4480.00f,// 4000.0f
+				.Temperature_R 					=  100.00f, // 100000.0f
+				.Temperature_Ref 				=  25.00f,	// 25.0f
+				.reserved 						=  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+				.calcrc 						=  0x32ed,	// Checksum
+			},
 
 		.settings = (ConverterSettings_t){//ConverterSettings_t settings;
 				.meterfilterCoeficient 			=  0.93f,	// %
-				.HighSideVoltageLimitSoft    	=  80.00e3f,// mV
-				.LowSideVoltageLimitSoft 		=  80.00e3f,// mV
-				.HighSideCurrentLimitSoft 		=  9.00e3f,	// mA
-				.LowSideCurrentMaxLimitSoft 	=  9.00e3f, // mA
+				.HighSideVoltageLimitSoft    	=  147.00e3f,	// mV
+				.LowSideVoltageLimitSoft 		=  90.00e3f,	// mV
+				.HighSideCurrentLimitSoft 		=  8.00e3f,	// mA
+				.LowSideCurrentMaxLimitSoft 	=  8.00e3f, // mA
 				.LowSideCurrentMinLimitSoft 	= -0.30e3f,	// mA
 				.PhaseHighSideEnableCurrent 	= -0.50e3f, // mA
 				.TemperatureLimitStart 			=  80.00f, 	// C
@@ -65,20 +64,21 @@ modConfig_t defaultConvig = {
 				.outputEnable 					=  false,	// Bool
 				.outputEnalbeOnStartup			=  true,	// Bool
 				.startupDelay                 	=  0,		// ms
-		},
+			},
 		.mpptsettings = (modMPPTsettings_t){
 				.PO_Stepsize					=  100.0f,	// mV
 				.PO_Timestep					=  5,		// ms
 				.PO_StepSizeGain 				=  1.0f,	// float P&O Step Size Gain;
 				.jump_PowerThreshold 			=  50, 		//float jump_PowerThreshold;
 				.jump_Rate 						=  0, 		//int jump_Rate;
-		},
+			},
 		.cansettings = (modCanSettings_t){
 				.baudrate 						=  250,  	// kbps
 				.samplepoint					=  0.75f,	// %
 				.generalCanId					=  32,
-		},
+			},
 };
+
 
 void hw_io_init(){
 
@@ -89,7 +89,6 @@ void hw_io_init(){
 	//CAN
 	hw_setio_af(GPIOB,  GPIO_PIN_5,  GPIO_AF9_FDCAN2);
 	hw_setio_af(GPIOB, GPIO_PIN_6, GPIO_AF9_FDCAN2);
-
 
 
 	//UART
@@ -160,15 +159,16 @@ void hw_adc_init(){
 	sConfig.OffsetNumber = ADC_OFFSET_NONE;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
 	sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-	sConfig.SingleDiff = ADC_DIFFERENTIAL_ENDED;
+	//sConfig.SingleDiff = ADC_DIFFERENTIAL_ENDED;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
 
-	sConfig.Channel = ADC_CHANNEL_3;
-
+	//sConfig.Channel = ADC_CHANNEL_3;
+	sConfig.Channel = ADC_CHANNEL_4;
 
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
-	sConfig.Channel = ADC_CHANNEL_4;
-	//sConfig.Channel = ADC_CHANNEL_5;
+	//sConfig.Channel = ADC_CHANNEL_4;
+	sConfig.Channel = ADC_CHANNEL_5;
 
 	HAL_ADC_ConfigChannel(&hadc4, &sConfig);
 
@@ -191,9 +191,5 @@ void hw_adc_init(){
 	sConfig.Channel = ADC_CHANNEL_2;
 	sConfig.Rank = ADC_REGULAR_RANK_3;
 	HAL_ADC_ConfigChannel(&hadc5, &sConfig);
-
-
 }
-
 #endif
-

@@ -17,8 +17,8 @@ uint16_t canid = 0;
 modCanSettings_t *cansettings;
 uint8_t modCANRxBufferLastID;
 
-#define MODCAN_RXBUFFER_SIZE 256
-uint8_t modCANRxBuffer[MODCAN_RXBUFFER_SIZE];
+#define MODCAN_RXBUFFER_SIZE 512
+uint8_t modCANRxBuffer[RX_CAN_BUFFER_SIZE];
 
 extern ConverterPhase_t phase;
 extern ConverterMueasurements_t meter;
@@ -45,7 +45,9 @@ typedef struct {
 	uint8_t data[8];
 } modCanRxQue_t;
 
+#define MODCAN_TXTIMEOUT 10
 #define MODCAN_TXBUFFER_SIZE 32
+
 modCanTxQue_t TXQue[MODCAN_TXBUFFER_SIZE];
 modCanRxQue_t RXQue[MODCAN_TXBUFFER_SIZE];
 
@@ -100,7 +102,7 @@ void modCANinit(modCanSettings_t *s) {
 	hfdcan2.Init.ClockDivider = FDCAN_CLOCK_DIV1;
 	hfdcan2.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
 	hfdcan2.Init.Mode = FDCAN_MODE_NORMAL;
-	hfdcan2.Init.AutoRetransmission = DISABLE;
+	hfdcan2.Init.AutoRetransmission = ENABLE;
 	hfdcan2.Init.TransmitPause = DISABLE;
 	hfdcan2.Init.ProtocolException = DISABLE;
 	hfdcan2.Init.NominalPrescaler = (uint32_t) pre;
@@ -132,11 +134,10 @@ void modCANinit(modCanSettings_t *s) {
 	}
 
 	sFilterConfig.IdType = FDCAN_EXTENDED_ID;
-	sFilterConfig.FilterIndex = 1;
+	sFilterConfig.FilterIndex = 0;
 	sFilterConfig.FilterType = FDCAN_FILTER_RANGE;
 	sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-	sFilterConfig.FilterID1 = modCANGetCANEXID(canid,
-			CAN_PACKET_FILL_RX_BUFFER);
+	sFilterConfig.FilterID1 = modCANGetCANEXID(canid, CAN_PACKET_FILL_RX_BUFFER);
 	sFilterConfig.FilterID2 = modCANGetCANEXID(canid, CAN_PACKET_MSGCOUNT - 1);
 
 	if (HAL_FDCAN_ConfigFilter(&hfdcan2, &sFilterConfig) != HAL_OK) {
@@ -211,33 +212,56 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 			//These messages are send, not receifed.
 			break;
 		case CAN_PACKET_FILL_RX_BUFFER:
+
+			//Check Data length
+			if(DLC <= 1){
+				break;
+			}
+
 			if ((rxmsg->data[0] + DLC) < MODCAN_RXBUFFER_SIZE) {
 				memcpy(modCANRxBuffer + rxmsg->data[0], rxmsg->data + 1,
 						(DLC - 1) * sizeof(uint8_t));
 			}
+
+
+
 			break;
 
 		case CAN_PACKET_FILL_RX_BUFFER_LONG:
 			rxbuf_ind = (unsigned int) rxmsg->data[0] << 8;
 			rxbuf_ind |= rxmsg->data[1];
 
+
+			//Check Data length
+			if(DLC <= 2){
+				break;
+			}
+
 			if (rxbuf_ind < RX_CAN_BUFFER_SIZE) {
 				memcpy(modCANRxBuffer + rxbuf_ind, rxmsg->data + 2,
 						(DLC - 2) * sizeof(uint8_t));
 			}
+
+
 			break;
 
 		case CAN_PACKET_PROCESS_RX_BUFFER:
+			//Check Data length
+			if(DLC < 6){
+				break;
+			}
+
 			modCANRxBufferLastID = rxmsg->data[0];
 			commands_send = rxmsg->data[1];
 			rxbuf_len = (unsigned int) rxmsg->data[2] << 8;
 			rxbuf_len |= (unsigned int) rxmsg->data[3];
-			crc = ((uint16_t) (rxmsg->data[4] << 8))
-					| (uint16_t) rxmsg->data[5];
+			crc = (((uint16_t)rxmsg->data[4]) << 8) | (uint16_t) rxmsg->data[5];
 
 			if (rxbuf_len > RX_CAN_BUFFER_SIZE) {
 				break;
 			}
+
+
 			if (libCRCCalcCRC16(modCANRxBuffer, rxbuf_len) == crc) {
 
 				if (commands_send) {
@@ -250,6 +274,11 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 			break;
 
 		case CAN_PACKET_PROCESS_SHORT_BUFFER:
+			//Check Data length
+			if(DLC <= 2){
+				break;
+			}
+
 			modCANRxBufferLastID = rxmsg->data[0];
 			commands_send = rxmsg->data[1];
 
@@ -262,6 +291,11 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 			break;
 
 		case CAN_CMD_SETMODE:
+			//Check Data length
+			if(DLC < 1){
+				break;
+			}
+
 			modMpptSetMode((modMPPTmode_t)rxmsg->data[0]);
 			break;
 
@@ -293,7 +327,7 @@ void modCANtask(void) {
 	dt = tnow - lasttick;
 	lasttick = tnow;
 
-	if(tx_available) {
+	/*if(tx_available) {
 		if (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2)) {
 			lastAcktion = HAL_GetTick();
 
@@ -306,7 +340,10 @@ void modCANtask(void) {
 			}
 		}
 	}
-	else if (rx_available) {
+	else
+	*/
+
+	if (rx_available) {
 		do {
 			lastAcktion = HAL_GetTick();
 
@@ -379,6 +416,34 @@ uint32_t modCANGetCANID(uint32_t destinationID, CAN_PACKET_ID packetID) {
 	return ((destinationID << 4) & 0x7F0) | (packetID & 0x00F);
 }
 
+void modCANTransmit(FDCAN_TxHeaderTypeDef* txmsg, uint8_t* data){
+
+	//Check for bus errors
+	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+	HAL_FDCAN_GetProtocolStatus(&hfdcan2, &ProtocolStatus);
+
+	if(ProtocolStatus.BusOff){
+		CLEAR_BIT(hfdcan2.Instance->CCCR, FDCAN_CCCR_INIT);
+	}
+
+	if (HAL_FDCAN_IsRestrictedOperationMode(&hfdcan2)){
+		HAL_FDCAN_ExitRestrictedOperationMode(&hfdcan2);
+	}
+
+	//Wait till there i room in the TX buffer.
+	uint32_t ts = HAL_GetTick();
+	while(HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2) < 1){
+		if ((ts - HAL_GetTick()) > MODCAN_TXTIMEOUT){
+			return;
+		}
+	}
+
+	lastAcktion = HAL_GetTick();
+	HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, txmsg, data);
+
+	HAL_Delay(1);
+}
+
 void modCANTransmitStandardID(uint32_t id, uint8_t *data, uint8_t len) {
 	FDCAN_TxHeaderTypeDef txmsg;
 	if (len > 8)
@@ -394,12 +459,17 @@ void modCANTransmitStandardID(uint32_t id, uint8_t *data, uint8_t len) {
 	txmsg.DataLength = (uint32_t) (len << 16);
 	txmsg.Identifier = id;
 
+	modCANTransmit(&txmsg, data);
+
+	/*
 	TXQue[tx_wr].txmsg = txmsg;
 	memcpy(TXQue[tx_wr].data, data, sizeof(uint8_t) * len);
 	tx_wr++;
 	tx_available++;
 	if (tx_wr >= MODCAN_TXBUFFER_SIZE)
 		tx_wr = 0;
+	*/
+
 }
 
 void modCANTransmitExtID(uint32_t id, uint8_t *data, uint8_t len) {
@@ -418,16 +488,23 @@ void modCANTransmitExtID(uint32_t id, uint8_t *data, uint8_t len) {
 	txmsg.DataLength = (uint32_t) (len << 16);
 	txmsg.Identifier = id;
 
-	TXQue[tx_wr].txmsg = txmsg;
-	memcpy(TXQue[tx_wr].data, data, sizeof(uint8_t) * len);
-	tx_wr++;
-	tx_available++;
-	if (tx_wr >= MODCAN_TXBUFFER_SIZE)
-		tx_wr = 0;
+	modCANTransmit(&txmsg, data);
+
+
+	//TXQue[tx_wr].txmsg = txmsg;
+	//memcpy(TXQue[tx_wr].data, data, sizeof(uint8_t) * len);
+	//tx_wr++;
+	//tx_available++;
+	//if (tx_wr >= MODCAN_TXBUFFER_SIZE)
+	//	tx_wr = 0;
+
+
+
 }
 
-void modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len,
-		bool send) {
+
+
+void modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len, bool send) {
 	uint8_t send_buffer[8];
 
 	if (len <= 6) {
@@ -436,9 +513,7 @@ void modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len,
 		send_buffer[ind++] = send;
 		memcpy(send_buffer + ind, data, len);
 		ind += len;
-		modCANTransmitExtID(
-				modCANGetCANEXID(controllerID, CAN_PACKET_PROCESS_SHORT_BUFFER),
-				send_buffer, (uint8_t) ind);
+		modCANTransmitExtID(modCANGetCANEXID(controllerID, CAN_PACKET_PROCESS_SHORT_BUFFER), send_buffer, (uint8_t) ind);
 	} else {
 		unsigned int end_a = 0;
 		for (unsigned int i = 0; i < len; i += 7) {
@@ -458,9 +533,7 @@ void modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len,
 				memcpy(send_buffer + 1, data + i, send_len);
 			}
 
-			modCANTransmitExtID(
-					modCANGetCANEXID(controllerID, CAN_PACKET_FILL_RX_BUFFER),
-					send_buffer, (uint8_t) (send_len + 1));
+			modCANTransmitExtID(modCANGetCANEXID(controllerID, CAN_PACKET_FILL_RX_BUFFER), send_buffer, (uint8_t) (send_len + 1));
 		}
 
 		for (unsigned int i = end_a; i < len; i += 6) {
@@ -475,14 +548,11 @@ void modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len,
 				memcpy(send_buffer + 2, data + i, send_len);
 			}
 
-			modCANTransmitExtID(
-					modCANGetCANEXID(controllerID,
-							CAN_PACKET_FILL_RX_BUFFER_LONG), send_buffer,
-					(uint8_t) (send_len + 2));
+			modCANTransmitExtID(modCANGetCANEXID(controllerID, CAN_PACKET_FILL_RX_BUFFER_LONG), send_buffer, (uint8_t) (send_len + 2));
 		}
 
 		uint32_t ind = 0;
-		send_buffer[ind++] = (uint8_t) (canid >> 4);
+		send_buffer[ind++] = (uint8_t) canid & 0xFF;
 		send_buffer[ind++] = send;
 		send_buffer[ind++] = (uint8_t) (len >> 8);
 		send_buffer[ind++] = len & 0xFF;
@@ -492,9 +562,7 @@ void modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len,
 
 		// Old ID method
 		//modCANTransmitExtID(controllerID | ((uint32_t)CAN_PACKET_PROCESS_RX_BUFFER << 8), send_buffer, ind++);
-		modCANTransmitExtID(
-				modCANGetCANEXID(controllerID, CAN_PACKET_PROCESS_RX_BUFFER),
-				send_buffer, (uint8_t) ind++);
+		modCANTransmitExtID(modCANGetCANEXID(controllerID, CAN_PACKET_PROCESS_RX_BUFFER), send_buffer, (uint8_t) ind++);
 	}
 }
 

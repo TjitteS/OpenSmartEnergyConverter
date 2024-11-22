@@ -1,5 +1,5 @@
 /*
- **	Copyright 2023 Tjitte van der Ploeg, tjitte@tpee.nl
+ **	Copyright 2024 Tjitte van der Ploeg, tjitte@tpee.nl
  **
  **	This file is part of the OpenBoost firmware.
  **	The Open-SEC firmware is free software: you can redistribute
@@ -13,8 +13,10 @@
  **	You should have received a copy of the GNU General Public License along
  **	with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#include "secb.h"
+
+#ifdef HW_SECB175_10A
+
+#include <secb17510a.h>
 #include "stm32g4xx_hal.h"
 #include "stdbool.h"
 #include "config.h"
@@ -27,51 +29,57 @@ extern ADC_HandleTypeDef hadc3;
 extern ADC_HandleTypeDef hadc4;
 extern ADC_HandleTypeDef hadc5;
 
-#ifdef HW_SECB175
 
 modConfig_t defaultConvig = {
-		{//CalibrationData_t	calData;
-				"SEC-B175-7A",
-				"0002301",
-				"0000000",
-				false,
-				4.82f,//float InputCurrentGain;// A/V
-				0.0f,	//float InputCurrentOffset;//mA
-				78.9f,	//float InputVoltageGain;// V/V
-				0.0f,	//float InputVoltageOffset;//mV
-				-4.82f,	//float OutputCurrentGain;//  A/V
-				0.0f,	//float OutputCurrentOffset;//mA
-				78.9f,	//float OutputVoltageGain;// V/V
-				0.0f,	//float OutputVoltageOffset;//mV
+		.calData = (CalibrationData_t){//CalibrationData_t	calData;
+				.HardwareName 					=  "SEC-B175-10A",
+				.HardwhareVersionString 		=  "002405",
+				.SerialString 					=  "000000",
+				.calibrated 					=  false,
+				.InputCurrentGain 				=  6.23f,	// A/V
+				.InputCurrentOffset 			=  0.00f,	// mA
+				.InputVoltageGain 				=  78.90f,	// V/V
+				.InputVoltageOffset 			=  106.20f,	// mV
+				.OutputCurrentGain 				= -6.43f,	// A/V
+				.OutputCurrentOffset 			=  0.00f,	// mA
+				.OutputVoltageGain 				=  78.90f,	// V/V
+				.OutputVoltageOffset 			=  106.15f,	// mV
+				.Temperature_B 					=  4480.00f,// 4000.0f
+				.Temperature_R 					=  100.00f, // 100000.0f
+				.Temperature_Ref 				=  25.00f,	// 25.0f
+				.reserved 						=  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+				.calcrc 						=  0x393d,	// Checksum
+			},
 
-				4480.0f,	//float Temperature_B;//4000.0f
-				100.0f,	//float Temperature_R;//100000.0f
-				25.0f,	//float Temperature_Ref;//25.0f
-				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//uint32_t reserved[32];
-				0xc655,	//uint16_t calcrc; //Checksum
-		},{//ConverterSettings_t settings;
-				0.995f, 	// float meterfilterCoeficient;
-				147.0e3f, 	// float HighSideVoltageLimitSoft;	 mV
-				95.0e3f,	// float LowSideVoltageLimitSoft;	 mV
-				7.5e3f, 	// float HighSideCurrentLimitSoft;	 mA
-				7.5e3f, 	// float LowSideCurrentMaxLimitSoft, mA
-				-300.0f, 		// float LowSideCurrentMinLimitSoft, mA
-				-500.0f,		// float PhaseHighSideEnableCurrent, mA
-				80.0f, 		// float TemeratureLimitStart,	 	Degrees Celcius
-				85.0f,		// float TemeratureLimitEnd, 		Degrees Celcius
-				false,//bool outputEnable;
-		},{//modMPPTsettings_t mpptsettings;
-				500.0f, //float PO_Stepsize; mV
-				50, //uint32_t PO_Timestep; ms
-				0.8f,  // float P&O Step Size Gain;
-				0, //float jump_PowerThreshold;
-				0, //int jump_Rate;
-		},{//modCanSettings_t cansettings;
-				250,//int baudrate; kbps
-				0.75,//float samplepoint;
-				32,//uint16_t generalCanId;
-		},
+			.settings = (ConverterSettings_t){//ConverterSettings_t settings;
+						.meterfilterCoeficient 			=  0.93f,	// %
+						.HighSideVoltageLimitSoft    	=  147.00e3f,	// mV
+						.LowSideVoltageLimitSoft 		=  90.00e3f,	// mV
+						.HighSideCurrentLimitSoft 		=  11.00e3f,	// mA
+						.LowSideCurrentMaxLimitSoft 	=  11.00e3f, // mA
+						.LowSideCurrentMinLimitSoft 	= -0.30e3f,	// mA
+						.PhaseHighSideEnableCurrent 	= -0.50e3f, // mA
+						.TemperatureLimitStart 			=  80.00f, 	// C
+						.TemperatureLimitEnd 			=  85.00f,	// C
+						.outputEnable 					=  false,	// Bool
+						.outputEnalbeOnStartup			=  true,	// Bool
+						.startupDelay                 	=  0,		// ms
+					},
+				.mpptsettings = (modMPPTsettings_t){
+						.PO_Stepsize					=  100.0f,	// mV
+						.PO_Timestep					=  5,		// ms
+						.PO_StepSizeGain 				=  1.0f,	// float P&O Step Size Gain;
+						.jump_PowerThreshold 			=  50, 		//float jump_PowerThreshold;
+						.jump_Rate 						=  0, 		//int jump_Rate;
+					},
+				.cansettings = (modCanSettings_t){
+						.baudrate 						=  250,  	// kbps
+						.samplepoint					=  0.75f,	// %
+						.generalCanId					=  32,
+					},
 };
+
+
 
 
 void hw_io_init(){

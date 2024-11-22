@@ -79,6 +79,7 @@ void modMPPTtask() {
 
 		case MpptState_PO:
 			modMPPTPerturbAndObserve();
+			scope_trigger();
 			//phase.Vsp = 10000;
 			break;
 		case MpptState_SweepStart:

@@ -14,16 +14,20 @@
  **	with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#ifndef HARDWARE_HW_OPENBOOST_H_
-#define HARDWARE_HW_OPENBOOST_H_
 
-#ifdef HW_REBOOST
+#ifndef HARDWARE_SECB_H_
+#define HARDWARE_SECB_H_
+#ifdef HW_SECB175_10A
+
+#include "stm32g4xx_hal.h"
+#include "stdio.h"
+
+
 #ifndef HW_NAME
-#define HW_NAME "SEC-B80-8A"
+#define HW_NAME "SEC-B175-10A"
 #endif
 
 #define HW_TOPOLOGY_BOOST
-
 
 #define HW_HAS_IOUT_SENSOR
 #define HW_HAS_UART
@@ -31,29 +35,7 @@
 #define HW_HASID
 #define HSEN
 
-
 #define HW_ADCREF 2900.0f
-//Limits
-#define HW_LIMIT_HS_VOLTAGE_HARD 90000
-#define HW_LIMIT_LS_VOLTAGE_HARD 90000
-#define HW_LIMIT_HS_CURRENT_HARD 13000
-#define HW_LIMIT_LS_CURRENT_HARD 13000
-#define HW_MAX_CURRENT_SETTING   9000.0f
-
-#define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.15f
-
-#define HW_ADC_DELAY           0.03f
-#define HW_SWITCHINGFREQUENCY  100
-#define HW_CONTROLLERFREQUENCY 35
-#define HW_DEADTIMERISING      40
-#define HW_DEADTIMEFALLING     40
-#define HW_L                   68e-6f
-#define HW_CLOW                100e-6f
-#define HW_CHIGH               600e-6f
-#define HW_RLINT               30e-3f
-#define HW_Q                   0.5
-#define HW_KLIM                0.4
-
 
 #define HW_TIMERINDEX 			HRTIM_TIMERINDEX_TIMER_B
 #define HW_HRTIM_ADCTRIGGER 	HRTIM_ADCTRIGGEREVENT13_TIMERB_CMP3
@@ -66,8 +48,31 @@
 #define CURRENT_PV_FORGETING_FACTOR		0.93f
 #define TEMP_FORGETING_FACTOR			0.95f
 
+//Limits
+#define HW_LIMIT_HS_VOLTAGE_HARD 184210
+#define HW_LIMIT_LS_VOLTAGE_HARD 184210
+#define HW_LIMIT_HS_CURRENT_HARD 16000
+#define HW_LIMIT_LS_CURRENT_HARD 16000
+#define HW_MAX_CURRENT_SETTING   10500.0f
+
+#define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.35f
+
+#define HW_SWITCHINGFREQUENCY  72
+#define HW_DEADTIMERISING      160
+#define HW_DEADTIMEFALLING     22
+#define HW_L                   60e-6
+#define HW_RLINT               15e-3
+
+#define HW_ADC_DELAY           0.55f
+
+#define HW_CONTROLLERFREQUENCY 25
 
 
+#define HW_CLOW                220.0e-6f
+#define HW_CHIGH               440.0e-6f
+
+#define HW_Q                   0.5f
+#define HW_KLIM                0.4f
 
 //Pinout
 #define LED0_Pin 			GPIO_PIN_15
@@ -78,6 +83,7 @@
 #define LED2_GPIO_Port 		GPIOC
 #define LED3_Pin 			GPIO_PIN_9
 #define LED3_GPIO_Port 		GPIOB
+
 #define ID0_Pin 			GPIO_PIN_4
 #define ID0_GPIO_Port 		GPIOC
 #define ID1_Pin 			GPIO_PIN_0
@@ -86,6 +92,7 @@
 #define ID2_GPIO_Port 		GPIOB
 #define ID3_Pin 			GPIO_PIN_2
 #define ID3_GPIO_Port 		GPIOB
+
 #define VLS_Pin 			GPIO_PIN_1
 #define VLS_GPIO_Port 		GPIOA
 #define IHS__Pin 			GPIO_PIN_2
@@ -119,5 +126,11 @@
 #define BOOT0_Pin 			GPIO_PIN_8
 #define BOOT0_GPIO_Port 	GPIOB
 
+
+//const CalibrationData_t defaultCalibration;
+
+
+void hw_io_init(void);
+void hw_adc_init(void);
 #endif
-#endif /* HARDWARE_HW_OPENBOOST_H_ */
+#endif /* HARDWARE_SECB_H_ */

@@ -39,8 +39,10 @@ float lossedEnergy = 0;
 float runtime= 0;
 float lossedPowerAverage=0;
 float Vbat;
+int ncell;
 
-float * cvic;
+float W0 = 1000;
+float W1 = 1000;
 modTestS_t test;
 
 uint32_t lastTestTick = 0;
@@ -80,9 +82,9 @@ void modTestingInit(const ConverterSettings_t* s){
 	//Vbat = 80.0f *0.8;
 
 	float Voc = Vbat /2;
-	int ncell = Voc / 0.742f;
+	ncell = Voc / 0.742f;
 
-	modTestingPVInit(&cell, ncell*0.649f, ncell*0.742f, 6.5f, 6.7f, 1000 / 6.7 * Isc);
+	modTestingPVInit(&cell, 0.649f, 0.742f, 6.5f, 6.7f, 1000 / 6.7 * Isc);
 
 	simstate.Vlow = Voc/2;
 	simstate.Vhigh = Vbat;
@@ -98,7 +100,8 @@ void modTestingInit(const ConverterSettings_t* s){
 
 	simstate.Iind = 0;
 	simstate.Ihigh = 0;
-	cvic = (float*)IVc2;
+	W0 = 1000;
+	W1 = 1000;
 	mpp = getMpp( (float*)IVc2 );
 }
 
@@ -108,28 +111,28 @@ void modTestingTask(){
 	if(modDelayTick1ms(&lastTestTick, 1000)){
 		curvestate = !curvestate;
 		if(curvestate){
-			mpp = getMpp((float*)IVc2);
-
-			cvic = (float*)IVc2;
+			W1 = 500;
 		}else{
-			mpp = getMpp((float*)IVc1);
-			cvic = (float*)IVc1;
+			W1 = 800;
 		}
 	}
 }
 
-float Ipvmodel(modTestingSolarCell_t *cell, float V){
+float Ipvmodel(modTestingSolarCell_t *cell, float V, float Irradiance, int ncell){
+	V /= ncell;
+
 	if(V <= 0.0f){
 		return cell->Isc;
 	}
 	if (V >= cell->Voc){
 		return 0;
 	}
-	return (cell->Isc - cell->C1*expf(-cell->Voc/cell->C2)*(expf(V/cell->C2)-1));
+	return (cell->Isc*Irradiance/1000.0f - cell->C1*expf(-cell->Voc/cell->C2)*(expf(V/cell->C2)-1));
 }
 
 float IpvPanel(float* IVc, float V){
 	//V /= 1000.0f;
+	/*
 	int i;
 	for (i = 0; i < IVC_SIZE; i++){
 		float v = IVc[i*2];
@@ -147,20 +150,27 @@ float IpvPanel(float* IVc, float V){
 	float v1 = IVc[(i*2)-2];
 
 	return (V-v0)/(v1-v0) * (i1-i0) + i0;
+	*/
+
 }
 
 void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* phase){
 	float Ilow = 0.0;
 #ifdef HW_TOPOLOGY_BOOST
 #ifdef SIM_NOMINAL
-	Ilow = Ipvmodel(&cell,state->Vlow);
+	Ilow = Ipvmodel(&cell,state->Vlow, 1000.0f, ncell);
 	state->Ihigh= (state->Vhigh-Vbat) / 0.1f;
 #elif defined (SIM_BATTERY_DISCONECT)
-	Iin = Ipvmodel(&cell,state->Vin);
+	Iin = Ipvmodel(&cell,state->Vlow);
 	state->Iout = 0;
 #elif defined (SIM_MULTPP)
-	Ilow = IpvPanel(cvic ,state->Vlow);
+
+	float I0 = Ipvmodel(&cell,state->Vlow, W0, ncell*0.7);
+	float I1 = Ipvmodel(&cell,state->Vlow, W1, ncell);
+	Ilow = I0 > I1 ? I0 : I1;
+
 	state->Ihigh= (state->Vhigh-Vbat) / 0.1f;
+
 #elif defined SIM_FWDMODE
 	Iin = Ipvmodel(&cell,state->Vin);
 	state->Iout= (state->Vout-Vbat) / 0.1f;

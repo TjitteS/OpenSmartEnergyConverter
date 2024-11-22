@@ -53,6 +53,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 	len--;
 
 	float tempfloat;
+
+
 	switch (packet_id) {
 		case COMM_FW_VERSION:
 			ind = 0;
@@ -325,6 +327,106 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			//modConverterSetInputVoltage_dep(tempfloat);
 			break;
 			*/
+
+
+		case COMM_MPPT_SCOPE_RUN:
+			scope.samples = buffer_get_uint16(data, &ind);
+			scope.pretrigger = buffer_get_uint16(data, &ind);
+			scope.divider = buffer_get_uint8(data, &ind);
+			scope.channel[0].source = buffer_get_uint8(data, &ind);
+			scope.channel[1].source = buffer_get_uint8(data, &ind);
+
+			if(scope.samples > CONVERTER_SCOPE_SAMPLESIZE){
+				scope.samples = CONVERTER_SCOPE_SAMPLESIZE;
+			}
+
+			scope_start();
+
+			ind = 0;
+			modCommandsSendBuffer[ind++] = packet_id;
+			buffer_append_float32_auto(modCommandsSendBuffer, scope.samplerate, &ind);
+			modCommandsSendPacket(modCommandsSendBuffer, ind);
+			break;
+
+		case COMM_MPPT_SCOPE_STEP:
+			scope.samples = buffer_get_uint16(data, &ind);
+			scope.pretrigger = buffer_get_uint16(data, &ind);
+			scope.divider = buffer_get_uint8(data, &ind);
+			scope.channel[0].source = buffer_get_uint8(data, &ind);
+			scope.channel[1].source = buffer_get_uint8(data, &ind);
+			float I0 = buffer_get_float32_auto(data, &ind);
+			float I1 = buffer_get_float32_auto(data, &ind);
+
+			if(scope.samples > CONVERTER_SCOPE_SAMPLESIZE){
+				scope.samples = CONVERTER_SCOPE_SAMPLESIZE;
+			}
+
+			if(I0 > phase.Iindlim/1000.0f){
+				I0 = phase.Iindlim/1000.0f;
+			}
+			if(I1 > phase.Iindlim/1000.0f){
+				I1 = phase.Iindlim/1000.0f;
+			}
+			if(I0 < 0.0f){
+				I0 = 0.0f;
+			}
+			if(I1 < 0.0f){
+				I1 = 0.0f;
+			}
+
+			ind = 0;
+			modCommandsSendBuffer[ind++] = packet_id;
+			buffer_append_float32_auto(modCommandsSendBuffer, scope.samplerate, &ind);
+			modCommandsSendPacket(modCommandsSendBuffer, ind);
+
+			float oldlim = phase.Iindlim;
+			phase.Iindlim = I0*1000.0f;
+
+			scope_start();
+			HAL_Delay(50);
+
+			phase.Iindlim = I1*1000.0f;
+			scope_trigger();
+			HAL_Delay(50);
+
+			phase.Iindlim = oldlim;
+			break;
+
+		case COMM_MPPT_SCOPE_GET_DATA:
+
+			for(int ch = 0; ch < 2; ch++){
+				int maxsize = 60;
+				for(int i = 0; i < scope.samples; i += maxsize){
+					int size = scope.samples - i;
+					if (size > maxsize){
+						size = maxsize;
+					}
+
+					ind = 0;
+					modCommandsSendBuffer[ind++] = packet_id;
+					buffer_append_uint8(modCommandsSendBuffer, ch, &ind);
+					buffer_append_uint16(modCommandsSendBuffer, i, &ind);
+					buffer_append_uint8(modCommandsSendBuffer, size, &ind);
+
+					for(int ii = 0; ii < size; ii++){
+						int index = ii+i + scope.triggerindex - scope.pretrigger;
+						if(index < 0){
+							index = scope.samples + index;
+						}
+						if(index >= scope.samples){
+							index = index - scope.samples;
+						}
+						buffer_append_float32_auto(modCommandsSendBuffer, scope.channel[ch].samples[index], &ind);
+					}
+
+					modCommandsSendPacket(modCommandsSendBuffer, ind);
+
+				}
+			}
+
+			break;
+
+
 		default:
 			break;
 	}

@@ -28,13 +28,14 @@
 
 ConverterPhase_t phase;
 ConverterMueasurements_t meter;
+ConverterScope_t scope;
+
 CalibrationData_t cal;
 ConverterSettings_t settings;
 
-float Ts = 10.0e-6f; //Sample period
+float Ts; //Sample period, s
 float ControllerR;
 extern uint32_t adc5data[6];
-
 
 
 void control_init(const ConverterSettings_t* s, const CalibrationData_t * c) {
@@ -83,18 +84,23 @@ void control_controlloop(ConverterPhase_t* p){
 	//Reset the mode variable.
 	p->mode = PhaseMode_CIV;
 
-	//Calculate converter input and output currents
-	p->Power = (p->Ihigh*p->Vhigh)*1.0e-6f;
+
 
 	//Ipv observer
-	float dvdt = (p->Vlow - p->Vlowm1) / (float)Ts;
+	float dvdt = (p->Vlow - p->Vlowm1) * (HW_CLOW) / (float)Ts;
 
 	p->Vlowm1 = p->Vlow;
-	float Ilowest = HW_CLOW*dvdt + p->Iind;
+	float Ilowest = 1 * dvdt + p->Iind;
 	EMA(p->Ilow, Ilowest, CURRENT_PV_FORGETING_FACTOR);
 
+
+	//Calculate converter input and output currents
+	//p->Power = (p->Ihigh*p->Vhigh)*1.0e-6f;
+	p->Power = (p->Ilow*p->Vlow)*1.0e-6f;
+
 	if(p->Power){
-		p->eff = (p->Power)/(p->Ilow*p->Vlow*1.0e-6f);
+		//p->eff = (p->Power)/(p->Ilow*p->Vlow*1.0e-6f);
+		p->eff = ((p->Ihigh*p->Vhigh)*1.0e-6f)/(p->Power);
 	}else{
 		p->eff = 0;
 	}
@@ -107,7 +113,7 @@ void control_controlloop(ConverterPhase_t* p){
 
 	float Vnn = p->Vsp - (p->Ilow *(ControllerR+HW_RLINT));
 
-	Ilim = p->Iindlim;
+	Ilim = p->Iindlim * HW_CURRENT_LIMIT_CORRECITONFACTOR;
 
 
 	//Temperature de-rating
@@ -312,11 +318,84 @@ void control_controlloop(ConverterPhase_t* p){
 	EMA(meter.Eff, p->eff,settings.meterfilterCoeficient);
 	EMA(meter.TemperatureAmbient, p->TemperatureAmbient,settings.meterfilterCoeficient);
 	EMA(meter.TemperatureHeatsink, p->TemperatureHeatsink,settings.meterfilterCoeficient);
-	meter.Power = meter.Vhigh*meter.Ihigh;
+	meter.Power = meter.Vlow*meter.Ilow;
 
+
+	if(scope.running){
+		if((scope.dividerindex++ >= scope.divider) || (scope.divider <= 1)){
+			scope.dividerindex = 0;
+
+			for(int ch = 0; ch < CONVERTER_SCOPE_CHANNELS; ch++){
+				float tempval = 0.0f;
+
+				switch (scope.channel[ch].source){
+				case SourceIndex_Iind:
+					tempval = p->Iind / 1.0e3f;
+					break;
+				case SourceIndex_Ihigh:
+					tempval = p->Ihigh / 1.0e3f;
+					break;
+				case SourceIndex_Vlow:
+					tempval = p->Vlow / 1.0e3f;
+					break;
+				case SourceIndex_Vhigh:
+					tempval = p->Vhigh / 1.0e3f;
+					break;
+				case SourceIndex_Ilow:
+					tempval = p->Ilow / 1.0e3f;
+					break;
+				case SourceIndex_Power:
+					tempval = p->Power;
+					break;
+				case SourceIndex_Eff:
+					tempval = p->eff;
+					break;
+				case SourceIndex_Iind_Filtered:
+					tempval = meter.Iind;
+					break;
+				case SourceIndex_Ihigh_Filtered:
+					tempval = meter.Ihigh;
+					break;
+				case SourceIndex_Vlow_Filtered:
+					tempval = meter.Vlow;
+					break;
+				case SourceIndex_Vhigh_Filtered:
+					tempval = meter.Vhigh;
+					break;
+				case SourceIndex_Ilow_Filtered:
+					tempval = meter.Ilow;
+					break;
+				case SourceIndex_Power_Filtered:
+					tempval = meter.Power;
+					break;
+				case SourceIndex_Eff_Filtered:
+					tempval = meter.Eff;
+					break;
+				}
+
+				scope.channel[ch].samples[scope.writeindex] = tempval;
+			}
+			scope.writeindex++;
+
+			if (scope.writeindex >= scope.samples){
+				scope.writeindex = 0;
+			}
+
+			if(scope.trigered){
+				int stopindex = scope.triggerindex - scope.pretrigger;
+				if (stopindex < 0){
+					stopindex = scope.samples + stopindex;
+				}
+
+				if(scope.writeindex == stopindex){
+					scope.running = false;
+				}
+			}
+		}
+	}
 
 #ifdef SIMULATION
-	modTestingSimstep(&simstate, Ts,&phase);
+	modTestingSimstep(&simstate, Ts/1,&phase);
 #endif
 }
 
@@ -551,4 +630,28 @@ void control_set_vhs_limit(float v){
 	if(v > settings.HighSideVoltageLimitSoft)v = settings.HighSideVoltageLimitSoft;
 	if(v < 5000.0f)v = 5000.0f;
 	phase.Vhighlim = v;
+}
+
+void scope_trigger(){
+	if(scope.running && (scope.trigered == false)){
+		if(scope.writeindex > scope.pretrigger){
+			scope.trigered = true;
+			scope.triggerindex = scope.writeindex;
+		}
+	}
+}
+void scope_start(){
+	scope.running = false;
+	int div = 1;
+	if (scope.divider > 1){
+		div = scope.divider;
+	}
+	scope.samplerate = 1/(Ts*div);
+	scope.writeindex = 0;
+	scope.trigered = false;
+	scope.triggerindex = 0;
+
+	scope.running = true;
+
+
 }
