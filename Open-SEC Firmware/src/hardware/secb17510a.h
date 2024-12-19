@@ -55,13 +55,13 @@
 #define HW_LIMIT_LS_CURRENT_HARD 16000
 #define HW_MAX_CURRENT_SETTING   10500.0f
 
-#define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.35f
+#define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.19f
 
-#define HW_SWITCHINGFREQUENCY  72
-#define HW_DEADTIMERISING      160
-#define HW_DEADTIMEFALLING     22
-#define HW_L                   60e-6
-#define HW_RLINT               15e-3
+#define HW_SWITCHINGFREQUENCY  59
+#define HW_DEADTIMERISING      141
+#define HW_DEADTIMEFALLING     45
+#define HW_L                   84e-6
+#define HW_RLINT               30e-3
 
 #define HW_ADC_DELAY           0.55f
 
