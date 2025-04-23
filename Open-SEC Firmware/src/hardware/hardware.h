@@ -22,7 +22,7 @@
 #include "stdio.h"
 
 #define FW_VERSION_MAJOR 1
-#define FW_VERSION_MINOR 5
+#define FW_VERSION_MINOR 6
 
 #if defined(HW_REBOOST)
 #include "hw_reboost.h"
@@ -32,6 +32,9 @@
 
 #elif defined(HW_SECB175_4A)
 #include "secb1754a.h"
+
+#elif defined(HW_SECB175_4B)
+#include "secb1754b.h"
 
 #elif defined(HW_SECB175_10A)
 #include "secb17510a.h"
