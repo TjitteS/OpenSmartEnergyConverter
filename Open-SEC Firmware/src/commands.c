@@ -335,12 +335,12 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			scope.divider = buffer_get_uint8(data, &ind);
 			scope.channel[0].source = buffer_get_uint8(data, &ind);
 			scope.channel[1].source = buffer_get_uint8(data, &ind);
-
+			bool fault = buffer_get_int8(data, &ind);
 			if(scope.samples > CONVERTER_SCOPE_SAMPLESIZE){
 				scope.samples = CONVERTER_SCOPE_SAMPLESIZE;
 			}
 
-			scope_start();
+			scope_start(fault);
 
 			ind = 0;
 			modCommandsSendBuffer[ind++] = packet_id;
@@ -382,7 +382,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			float oldlim = phase.Iindlim;
 			phase.Iindlim = I0*1000.0f;
 
-			scope_start();
+			scope_start(false);
 			HAL_Delay(50);
 
 			phase.Iindlim = I1*1000.0f;
@@ -424,6 +424,13 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 				}
 			}
 
+			break;
+
+		case COMM_MPPT_SCOPE_DATAREADY:
+			ind = 0;
+			modCommandsSendBuffer[ind++] = packet_id;
+			buffer_append_uint8(modCommandsSendBuffer, scope.running, &ind);
+			modCommandsSendPacket(modCommandsSendBuffer, ind);
 			break;
 
 

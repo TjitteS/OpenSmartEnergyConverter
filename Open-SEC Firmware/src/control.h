@@ -215,6 +215,7 @@ typedef struct{
 	bool trigered;
 	ConverterScopeChannel channel[CONVERTER_SCOPE_CHANNELS];
 	float samplerate;
+	bool faulttrigger;
 }ConverterScope_t;
 
 extern ConverterScope_t scope;
@@ -257,6 +258,7 @@ float control_get_setpoint(void);
 float control_get_regulated_voltage();
 float control_get_regulated_current();
 
+void scope_trigger_fault();
 void scope_trigger();
-void scope_start();
+void scope_start(bool OnFault);
 #endif

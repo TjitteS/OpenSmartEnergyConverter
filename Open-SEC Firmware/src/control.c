@@ -68,7 +68,7 @@ void control_init(const ConverterSettings_t* s, const CalibrationData_t * c) {
 	analog_init();
 
 	Ts = pwm_GetControllerPeriod();
-	ControllerR = sqrtf(HW_L/HW_CLOW)/ HW_Q-HW_RLINT;
+	ControllerR = sqrtf(HW_L/HW_CLOW)/ HW_Q  - HW_RLINT;
 
 	HAL_Delay(100);
 }
@@ -276,6 +276,7 @@ void control_controlloop(ConverterPhase_t* p){
 
 	if(p->fault != Converter_OK){
 		modConverterPWMOutputDisable();
+		scope_trigger_fault();
 	}else{
 		//Set PWM
 #ifndef SIMULATION
@@ -309,7 +310,7 @@ void control_controlloop(ConverterPhase_t* p){
 
 	}
 
-	//Do Lower priorety duties now.
+	//Do Lower priority duties now.
 	EMA(meter.Iind, p->Iind*0.001f,settings.meterfilterCoeficient);
 	EMA(meter.Ihigh, p->Ihigh*0.001f,settings.meterfilterCoeficient);
 	EMA(meter.Ilow, p->Ilow*0.001f,settings.meterfilterCoeficient);
@@ -632,15 +633,30 @@ void control_set_vhs_limit(float v){
 	phase.Vhighlim = v;
 }
 
-void scope_trigger(){
-	if(scope.running && (scope.trigered == false)){
-		if(scope.writeindex > scope.pretrigger){
-			scope.trigered = true;
-			scope.triggerindex = scope.writeindex;
+void scope_trigger_fault(){
+	if(scope.faulttrigger == true){
+		if(scope.running && (scope.trigered == false)){
+			if(scope.writeindex > scope.pretrigger){
+				scope.trigered = true;
+				scope.triggerindex = scope.writeindex;
+			}
 		}
 	}
 }
-void scope_start(){
+
+void scope_trigger(){
+	if(scope.faulttrigger == false){
+		if(scope.running && (scope.trigered == false)){
+			if(scope.writeindex > scope.pretrigger){
+				scope.trigered = true;
+				scope.triggerindex = scope.writeindex;
+			}
+		}
+	}
+}
+
+void scope_start(bool OnFault){
+	scope.faulttrigger = OnFault;
 	scope.running = false;
 	int div = 1;
 	if (scope.divider > 1){

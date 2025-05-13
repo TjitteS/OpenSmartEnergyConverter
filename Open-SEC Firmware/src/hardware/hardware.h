@@ -22,7 +22,7 @@
 #include "stdio.h"
 
 #define FW_VERSION_MAJOR 1
-#define FW_VERSION_MINOR 6
+#define FW_VERSION_MINOR 7
 
 #if defined(HW_REBOOST)
 #include "hw_reboost.h"

@@ -45,7 +45,7 @@
 #define VOLTAGE_IN_FORGETING_FACTOR		0.0f
 #define VOLTAGE_OUT_FORGETING_FACTOR	0.0f
 #define CURRENT_IN_FORGETING_FACTOR     0.0f
-#define CURRENT_PV_FORGETING_FACTOR		0.93f
+#define CURRENT_PV_FORGETING_FACTOR		0.8f
 #define TEMP_FORGETING_FACTOR			0.95f
 
 //Limits
@@ -71,7 +71,7 @@
 #define HW_CLOW                220.0e-6f
 #define HW_CHIGH               440.0e-6f
 
-#define HW_Q                   0.5f
+#define HW_Q                   0.8f
 #define HW_KLIM                0.4f
 
 //Pinout
