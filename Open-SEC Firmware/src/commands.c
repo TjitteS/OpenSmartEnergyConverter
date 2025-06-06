@@ -131,11 +131,17 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 
 			acktiveConfig->mpptsettings.PO_Stepsize = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.PO_Timestep = (uint32_t)buffer_get_uint16(data, &ind);
-
 			acktiveConfig->mpptsettings.PO_StepSizeGain = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.jump_PowerThreshold = buffer_get_float32_auto(data,&ind);
-
 			acktiveConfig->mpptsettings.jump_Rate 		= buffer_get_uint16(data, &ind);
+
+			acktiveConfig->mpptsettings.Sweep_eneable 		= buffer_get_int8(data,&ind);
+			acktiveConfig->mpptsettings.Sweep_interval		= buffer_get_uint16(data, &ind);
+			acktiveConfig->mpptsettings.Sweep_timestep		= buffer_get_uint16(data, &ind);
+			acktiveConfig->mpptsettings.Sweep_direction 	= buffer_get_int8(data,&ind);
+			acktiveConfig->mpptsettings.Sweep_datapoints	= buffer_get_uint16(data, &ind);
+			acktiveConfig->mpptsettings.Sweep_publishOnCan 	= buffer_get_int8(data,&ind);
+
 			acktiveConfig->cansettings.baudrate			= buffer_get_uint16(data, &ind);
 			acktiveConfig->cansettings.samplepoint		= buffer_get_float32_auto(data,&ind)/100.0;
 			acktiveConfig->cansettings.generalCanId		= buffer_get_uint16(data, &ind);
@@ -178,14 +184,22 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Stepsize,&ind);
 			buffer_append_uint16	(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Timestep, &ind);
-
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_StepSizeGain, &ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.jump_PowerThreshold,&ind);
-
 			buffer_append_uint16(modCommandsSendBuffer, acktiveConfig->mpptsettings.jump_Rate,&ind);
+
+			buffer_append_int8(modCommandsSendBuffer,  acktiveConfig->mpptsettings.Sweep_eneable,&ind);
+			buffer_append_uint16(modCommandsSendBuffer,  acktiveConfig->mpptsettings.Sweep_interval,&ind);
+			buffer_append_uint16(modCommandsSendBuffer,  acktiveConfig->mpptsettings.Sweep_timestep,&ind);
+			buffer_append_int8(modCommandsSendBuffer,  acktiveConfig->mpptsettings.Sweep_direction,&ind);
+			buffer_append_uint16(modCommandsSendBuffer,  acktiveConfig->mpptsettings.Sweep_datapoints,&ind);
+			buffer_append_int8(modCommandsSendBuffer,  acktiveConfig->mpptsettings.Sweep_publishOnCan,&ind);
+
 			buffer_append_uint16(modCommandsSendBuffer,  acktiveConfig->cansettings.baudrate,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->cansettings.samplepoint*100.0f, &ind);
 			buffer_append_uint16(modCommandsSendBuffer,  acktiveConfig->cansettings.generalCanId,&ind);
+
+
 
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
 			if(packet_id == COMM_GET_MCCONF_DEFAULT){
@@ -293,7 +307,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 		case CONM_MPPT_GET_SWEEP:
 			start = 1.0e3f*buffer_get_float16(data, 1.0e2f,&ind);
 			end   = 1.0e3f*buffer_get_float16(data, 1.0e2f,&ind);
-			modMpptStartSweep(start,end);
+			modMpptStartSweep(start,end, MPPT_SWEEP_SIZE);
 			break;
 
 		case CONM_MPPT_SetInputVoltage:
@@ -462,11 +476,11 @@ void modCommandsJumpToMainApplication(void) {
 	NVIC_SystemReset();
 }
 
-void modCommandsSendSweep(){
+void modCommandsSendSweep(int size){
 	int32_t ind = 0;
 	buffer_append_uint8(modCommandsSendBuffer, CONM_MPPT_GET_SWEEP,&ind);
-	buffer_append_uint8(modCommandsSendBuffer, (uint8_t) MPPT_SWEEP_SIZE,&ind);
-	for(int i =0; i < MPPT_SWEEP_SIZE; i++){
+	buffer_append_uint8(modCommandsSendBuffer, (uint8_t) size,&ind);
+	for(int i =0; i < size; i++){
 		buffer_append_float16(modCommandsSendBuffer, mppt_vs[i], 1.0e2f,&ind);
 		buffer_append_float16(modCommandsSendBuffer, mppt_is[i], 1.0e3f,&ind);
 	}

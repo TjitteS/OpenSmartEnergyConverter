@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 uint32_t lastSPsw;
+uint32_t laststep;
 uint32_t lastsweep;
 
 
@@ -36,6 +37,7 @@ float pp;
 int mpptSweepIndex = 0;
 float mpptSweepStepsize = 1.0e3;
 float mpptSweepSP;
+int mpptSweepSize = MPPT_SWEEP_SIZE;
 
 int oscillationnumber = 0;
 float changedStepSize = 0;
@@ -44,6 +46,7 @@ uint32_t tsweepstart;
 
 uint32_t tinit;
 
+uint32_t loopdelay;
 
 void modMPPTinit(modMPPTsettings_t *s) {
 	modMpptsettings = s;
@@ -58,11 +61,23 @@ void modMPPTinit(modMPPTsettings_t *s) {
 	modConverterPWMOutputDisable();
 
 	MpptLastAckion = MpptAcktionState_Init;
+
+	loopdelay = modMpptsettings->PO_Timestep;
 }
 
 
 void modMPPTtask() {
-	if (modDelayTick1ms(&lastsweep, modMpptsettings->PO_Timestep)) {
+
+	if(modMpptsettings->Sweep_eneable){
+		if(modDelayTick1ms(&lastsweep, modMpptsettings->Sweep_interval)){
+			if(modMpptsettings->Sweep_direction == MPPT_SWEEP_UP)
+				 modMpptStartSweep(HW_MIN_SETPOINT, settings.LowSideVoltageLimitSoft, modMpptsettings->Sweep_datapoints);
+			else
+				modMpptStartSweep(settings.LowSideVoltageLimitSoft, HW_MIN_SETPOINT, modMpptsettings->Sweep_datapoints);
+		}
+	}
+
+	if (modDelayTick1ms(&laststep, loopdelay)) {
 		switch(currentmode){
 		case MpptState_init:
 			tinit = HAL_GetTick();
@@ -80,36 +95,60 @@ void modMPPTtask() {
 		case MpptState_PO:
 			modMPPTPerturbAndObserve();
 			scope_trigger();
-			//phase.Vsp = 10000;
+
+			loopdelay = modMpptsettings->PO_Timestep;
+
 			break;
 		case MpptState_SweepStart:
 			mpptSweepIndex = 0;
 			control_set_setpoint(mpptSweepSP);
 			currentmode = MpptState_SweepStartupdelay;
 			tsweepstart = HAL_GetTick();
+
+			loopdelay = modMpptsettings->Sweep_timestep;
+
 			break;
 
 		case MpptState_SweepStartupdelay:
-			if ((HAL_GetTick() - tsweepstart) > 200){
+			if ((HAL_GetTick() - tsweepstart) > modMpptsettings->PO_Timestep){
 				currentmode = MpptState_Sweep;
 			}
 			break;
 
 		case MpptState_Sweep:
 
-			if(modConverterGetMode() != PhaseMode_CIC){
+			//if(modConverterGetMode() != PhaseMode_CIC){
 				mppt_is[mpptSweepIndex] = control_get_regulated_current();
 				mppt_vs[mpptSweepIndex] = control_get_regulated_voltage();
 
 				mpptSweepSP += mpptSweepStepsize;
 				control_set_setpoint(mpptSweepSP);
-				mpptSweepIndex++;
 
-				if(mpptSweepIndex >= MPPT_SWEEP_SIZE){
-					currentmode = MpptState_init;
-					modCommandsSendSweep();
+
+				if(mpptSweepIndex >= mpptSweepSize){
+					float vmpp = settings.LowSideVoltageLimitSoft;
+					float pmax = 0.0f;
+					for(int i = 0; i < mpptSweepSize; i++){
+						float p = mppt_is[i]*mppt_vs[i];
+						if(p > pmax){
+							pmax = p;
+							vmpp = mppt_vs[i]*1000.0f;
+						}
+					}
+
+					control_set_setpoint(vmpp);
+					currentmode = MpptState_PO;
+					modCommandsSendSweep(mpptSweepSize);
+
+					if(modMpptsettings->Sweep_publishOnCan){
+						modCANSendSweep(mppt_is, mppt_vs, mpptSweepSize);
+
+					}
+
 				}
-			}
+
+				mpptSweepIndex++;
+			//}
 
 
 			break;
@@ -239,8 +278,21 @@ void modMPPTPerturbAndObserve(){
 
 
 
-void modMpptStartSweep(float start, float end){
-	mpptSweepStepsize = (end-start)/(MPPT_SWEEP_SIZE-1);
+void modMpptStartSweep(float start, float end, int size){
+	//Only allow sweep when tracking.
+	if(currentmode != MpptState_PO){
+		return;
+	}
+
+	mpptSweepSize = size;
+	if (mpptSweepSize < 4){
+		mpptSweepSize = 4;
+	}
+
+	if (mpptSweepSize > MPPT_SWEEP_SIZE){
+		mpptSweepSize = MPPT_SWEEP_SIZE;
+	}
+	mpptSweepStepsize = (end-start)/(mpptSweepSize-1);
 	mpptSweepSP = start;
 	currentmode = MpptState_SweepStart;
 	MpptLastAckion = MpptAcktionState_Init;

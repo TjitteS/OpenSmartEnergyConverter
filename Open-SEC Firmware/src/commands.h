@@ -97,6 +97,6 @@ void modCommandsSendPacket(unsigned char *data, unsigned int len);
 void modCommandsProcessPacket(unsigned char *data, unsigned int len);
 void modCommandsPrintf(const char* format, ...);
 void modCommandsJumpToMainApplication(void);
-void modCommandsSendSweep(void);
+void modCommandsSendSweep(int size);
 
 #endif /* COMMANDS_H_ */

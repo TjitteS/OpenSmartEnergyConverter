@@ -26,6 +26,9 @@
 #include "control.h"
 #include "main.h"
 
+#define MPPT_SWEEP_DOWN true
+#define MPPT_SWEEP_UP false
+
 #define MPPT_SWEEP_SIZE (128)
 float mppt_vs[MPPT_SWEEP_SIZE];
 float mppt_is[MPPT_SWEEP_SIZE];
@@ -60,6 +63,14 @@ typedef struct{
 	float PO_StepSizeGain;
 	float jump_PowerThreshold;
 	int jump_Rate;
+
+	bool Sweep_eneable;
+	uint32_t Sweep_interval;
+	uint32_t Sweep_timestep;
+	bool Sweep_direction;
+	uint32_t Sweep_datapoints;
+	bool Sweep_publishOnCan;
+
 }modMPPTsettings_t;
 
 modMPPTlastacktionstate_t MpptLastAckion;
@@ -69,7 +80,7 @@ void modMPPTinit(modMPPTsettings_t *settings);
 
 void modMPPTPerturbAndObserve(void);
 void modMPPTSetPowerLevel(uint8_t level);
-void modMpptStartSweep(float start, float end);
+void modMpptStartSweep(float start, float end, int size);
 
 void modMpptSetMode(modMPPTmode_t mode);
 
