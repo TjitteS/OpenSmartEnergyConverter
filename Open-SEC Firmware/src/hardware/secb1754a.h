@@ -45,7 +45,7 @@
 #define VOLTAGE_IN_FORGETING_FACTOR		0.0f
 #define VOLTAGE_OUT_FORGETING_FACTOR	0.0f
 #define CURRENT_IN_FORGETING_FACTOR     0.0f
-#define CURRENT_PV_FORGETING_FACTOR		0.93f
+#define CURRENT_PV_FORGETING_FACTOR		0.5f
 #define TEMP_FORGETING_FACTOR			0.95f
 
 //Limits
@@ -55,24 +55,22 @@
 #define HW_LIMIT_LS_CURRENT_HARD 7000
 #define HW_MAX_CURRENT_SETTING   5000.0f
 
-#define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.15f
-
 //#define LC
 #define HW_SWITCHINGFREQUENCY  26
+#define HW_ADC_DELAY           0.6f
 #define HW_DEADTIMERISING      180
 #define HW_DEADTIMEFALLING     37
 #define HW_L                   248e-6
 #define HW_RLINT               60e-3
-
-#define HW_ADC_DELAY           0.8f
-
-#define HW_CONTROLLERFREQUENCY 20
-
 #define HW_CLOW                220e-6
 #define HW_CHIGH               440e-6
 
-#define HW_Q                   0.5
-#define HW_KLIM                0.4
+#define HW_Q                   0.5f
+#define HW_KLIM                0.8f
+#define HW_KLIM_VOUT           0.4f
+#define HW_CONTROLLERFREQUENCY 20
+#define HW_delay			   40e-6
+#define HW_IOUT_EN_HYST		   800 //mA
 
 //Pinout
 #define LED0_Pin 			GPIO_PIN_15

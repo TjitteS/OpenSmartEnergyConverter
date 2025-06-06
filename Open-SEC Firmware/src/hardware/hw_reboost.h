@@ -33,6 +33,14 @@
 
 
 #define HW_ADCREF 2900.0f
+
+//Filters
+#define VOLTAGE_IN_FORGETING_FACTOR		0.0f
+#define VOLTAGE_OUT_FORGETING_FACTOR	0.0f
+#define CURRENT_IN_FORGETING_FACTOR     0.0f
+#define CURRENT_PV_FORGETING_FACTOR		0.5f
+#define TEMP_FORGETING_FACTOR			0.95f
+
 //Limits
 #define HW_LIMIT_HS_VOLTAGE_HARD 90000
 #define HW_LIMIT_LS_VOLTAGE_HARD 90000
@@ -40,33 +48,24 @@
 #define HW_LIMIT_LS_CURRENT_HARD 13000
 #define HW_MAX_CURRENT_SETTING   9000.0f
 
-#define HW_CURRENT_LIMIT_CORRECITONFACTOR 1.15f
-
-#define HW_ADC_DELAY           0.03f
 #define HW_SWITCHINGFREQUENCY  100
-#define HW_CONTROLLERFREQUENCY 35
+#define HW_ADC_DELAY           -0.4f
 #define HW_DEADTIMERISING      40
 #define HW_DEADTIMEFALLING     40
 #define HW_L                   68e-6f
 #define HW_CLOW                100e-6f
 #define HW_CHIGH               600e-6f
-#define HW_RLINT               30e-3f
-#define HW_Q                   0.5
-#define HW_KLIM                0.4
+#define HW_RLINT               50e-3f
 
+#define HW_Q                   1.0f
+#define HW_KLIM                0.8f
+#define HW_KLIM_VOUT           0.4f
+#define HW_CONTROLLERFREQUENCY 20
+#define HW_delay			   30e-6
+#define HW_IOUT_EN_HYST		   800 //mA
 
 #define HW_TIMERINDEX 			HRTIM_TIMERINDEX_TIMER_B
 #define HW_HRTIM_ADCTRIGGER 	HRTIM_ADCTRIGGEREVENT13_TIMERB_CMP3
-
-
-//Filters
-#define VOLTAGE_IN_FORGETING_FACTOR		0.0f
-#define VOLTAGE_OUT_FORGETING_FACTOR	0.0f
-#define CURRENT_IN_FORGETING_FACTOR     0.0f
-#define CURRENT_PV_FORGETING_FACTOR		0.93f
-#define TEMP_FORGETING_FACTOR			0.95f
-
-
 
 
 //Pinout

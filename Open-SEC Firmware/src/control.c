@@ -77,6 +77,8 @@ float t;
 
 void control_controlloop(ConverterPhase_t* p){
 
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
+
 	bool TemperatureLimited = false;
 	bool OutputCurrentLimited = false;
 	bool OutputVoltageLimited = false;
@@ -87,22 +89,27 @@ void control_controlloop(ConverterPhase_t* p){
 
 
 	//Ipv observer
-	float dvdt = (p->Vlow - p->Vlowm1) * (HW_CLOW) / (float)Ts;
-
+	float dvdt = (p->Vlow - p->Vlowm1) / (float)Ts;
+	float Ilowest = dvdt*HW_CLOW  + (p->Iind + p->Iindm1)/2.0f;
 	p->Vlowm1 = p->Vlow;
-	float Ilowest = 1 * dvdt + p->Iind;
+	p->Iindm1 = p->Iind;
 	EMA(p->Ilow, Ilowest, CURRENT_PV_FORGETING_FACTOR);
 
+	//Time delay compensation
+	if (p->pwm_enabled){
 
-	//Calculate converter input and output currents
-	//p->Power = (p->Ihigh*p->Vhigh)*1.0e-6f;
-	p->Power = (p->Ilow*p->Vlow)*1.0e-6f;
 
-	if(p->Power){
-		//p->eff = (p->Power)/(p->Ilow*p->Vlow*1.0e-6f);
-		p->eff = ((p->Ihigh*p->Vhigh)*1.0e-6f)/(p->Power);
+		p->Iind_pred  = p->Iind // Zeroth order taylor term
+				+ HW_delay/HW_L*(p->Vlow - (1.0f-p->dutycycle)*p->Vhigh - HW_RLINT*p->Iind) //1st order taylor term
+				+ HW_delay*HW_delay/(HW_L*HW_CLOW)*(p->Ilow - p->Iind); //second order (reduced) taylor term.
+
+		p->Vhigh_pred = p->Vhigh;// + HW_delay/HW_CHIGH*(p->dutycycle*p->Iind  -  p->Ihigh);
+		p->Vlow_pred  = p->Vlow  + HW_delay/HW_CLOW *(p->Ilow - p->Iind);
 	}else{
-		p->eff = 0;
+		p->Iind_pred  = p->Iind
+				+ 0.5f*HW_delay/HW_L*(p->Vlow - (1.0f-p->dutycycle)*p->Vhigh - HW_RLINT*p->Iind); //1st order taylor term
+		p->Vhigh_pred = p->Vhigh;// + HW_delay/HW_CHIGH*(- p->Ihigh);
+		p->Vlow_pred  = p->Vlow; // + HW_delay/HW_CLOW *(p->Ilow);
 	}
 
 	//These variables need to be set by the controller.
@@ -113,7 +120,7 @@ void control_controlloop(ConverterPhase_t* p){
 
 	float Vnn = p->Vsp - (p->Ilow *(ControllerR+HW_RLINT));
 
-	Ilim = p->Iindlim * HW_CURRENT_LIMIT_CORRECITONFACTOR;
+	Ilim = p->Iindlim;
 
 
 	//Temperature de-rating
@@ -127,7 +134,7 @@ void control_controlloop(ConverterPhase_t* p){
 	}
 
 	//Output voltage limit
-	float Ioutlim = 0.8f * HW_KLIM*HW_CHIGH*(p->Vhighlim - p->Vhigh)/(Ts) + p->Ihigh;
+	float Ioutlim = HW_KLIM_VOUT*HW_CHIGH*(p->Vhighlim - p->Vhigh_pred)/(Ts);// + 0.5f*p->Ihigh;
 
 	if(Ioutlim > p->Ihighlim){
 		Ioutlim =  p->Ihighlim;
@@ -137,9 +144,9 @@ void control_controlloop(ConverterPhase_t* p){
 	float Ilimmaxvout = Ioutlim/(1.0f-p->dutycycle);
 
 	//Limit the input current to higher than 0, to prevent current under-shoot.
-	if(Ilimmaxvout < 0.0){
-		Ilimmaxvout = 0.0f;
-	}
+	//if(Ilimmaxvout < 0.0){
+	//	Ilimmaxvout = 0.0f;
+	//}
 
 	if(Ilim > Ilimmaxvout){
 		Ilim = Ilimmaxvout;
@@ -152,11 +159,13 @@ void control_controlloop(ConverterPhase_t* p){
 	//Current limit
 	//float Vnlimup = -p->Vlow - (settings.RLint * p->Iind) + ((settings.Klim * settings.L /Ts)*(settings.PhaseCurrentMin - p->Iind) );
 	//float Vnlimlo = -p->Vlow - (settings.RLint * p->Iind) + ((settings.Klim * settings.L /Ts)*(Ilim - p->Iind) );
-	float Vnlimup = +p->Vlow - (HW_RLINT * p->Iind) - (HW_KLIM*HW_L*(settings.LowSideCurrentMinLimitSoft - p->Iind)/Ts);
-	float Vnlimlo = +p->Vlow - (HW_RLINT * p->Iind) - (HW_KLIM*HW_L*(Ilim - p->Iind)/Ts );
+	float Vnlimup = +p->Vlow_pred - (HW_RLINT * p->Iind_pred) - (HW_KLIM*HW_L*(settings.LowSideCurrentMinLimitSoft - p->Iind_pred)/Ts)
+		 + Ts/(2*HW_CLOW)*(p->Ilow - p->Iind_pred);
+	float Vnlimlo = +p->Vlow_pred - (HW_RLINT * p->Iind_pred) - (HW_KLIM*HW_L*(Ilim - p->Iind_pred)/Ts )
+		+ Ts/(2*HW_CLOW)*(p->Ilow - p->Iind_pred);
 
 	//Unlimited controller
-	Vn = Vnn + (p->Iind*ControllerR);
+	Vn = Vnn + (p->Iind_pred*ControllerR);
 
 	//Limit Vnn to limit phase current
 	if(Vn > Vnlimup){
@@ -239,7 +248,7 @@ void control_controlloop(ConverterPhase_t* p){
     //Ilim = Isp;
 #endif
 
-	float Dn = Vn / p->Vhigh;
+	float Dn = Vn / p->Vhigh_pred;
 
 	if (Dn > 0.999f){
 		Dn = 0.999f;
@@ -257,60 +266,110 @@ void control_controlloop(ConverterPhase_t* p){
 		//if(p->dutycycle < 0.15f)p->dutycycle = 0.15f; TODO TODO
 	}
 
+
+	//Control PWM enable. Startup disabled to calculate initial pwm, then depending on output current.
 	//If the upper current limit is lower then the lower current limit, set the duty cycle to 0
 	//This ensure full shutdown when the power level gets towards zero.
 	bool disable_voutlim = false;
-	if(fabsf(Ilim) < fabsf(settings.LowSideCurrentMinLimitSoft)){
+	if(Ilim < 0){
 		p->HSEport->BRR = p->HSEpin;
 		p->PENport->BRR = p->PENpin;
 
 		disable_voutlim = true;
-		//modConverterPWMOutputDisable();
+		p->pwm_enabled =  false;
 	}else{
-		if(p->enabled){
-			p->PENport->BSRR = p->PENpin;
-		}
+		if(Ilim >  HW_IOUT_EN_HYST){
+			if(p->enabled){
 
-		//modConverterPWMOutputEnable();
+				p->pwm_enabled =  true;
+			}
+		}
 	}
 
 	if(p->fault != Converter_OK){
 		modConverterPWMOutputDisable();
 		scope_trigger_fault();
 	}else{
+
+
 		//Set PWM
-#ifndef SIMULATION
-#ifdef HSEN
-		if(p->dutycycle < 0.01f){
-			//Do not, ever put on the high side FET continuesly.
-			//e.g. when the duty cycle is zero.
-			p->HSEport->BRR = p->HSEpin;
+
+
+
+		//Deadtime compensation
+		float dI = (p->Vlow_pred*p->dutycycle)/ (HW_SWITCHINGFREQUENCY*1e3*HW_L);
+		float dtcomp = 0;
+
+		if (p->Iind_pred +  dI/2 > 0.0f){
+			dtcomp += HW_DEADTIMERISING*1e-6*HW_SWITCHINGFREQUENCY;
 		}
-#ifdef HW_TOPOLOGY_BOOST
-		else if(p->Iind > settings.PhaseHighSideEnableCurrent){
-			if(disable_voutlim == false){
+		else{
+			dtcomp -= HW_DEADTIMERISING*1e-6*HW_SWITCHINGFREQUENCY;
+		}
+
+		if (p->Iind_pred -  dI/2 > 0.0f){
+			dtcomp += HW_DEADTIMEFALLING*1e-6*HW_SWITCHINGFREQUENCY;
+		}
+		else{
+			dtcomp -= HW_DEADTIMEFALLING*1e-6*HW_SWITCHINGFREQUENCY;
+		}
+
+
+		pwm_setDuty(p->dutycycle + dtcomp);
+
+		if(p->pwm_enabled){
+
+			#ifndef SIMULATION
+			p->PENport->BSRR = p->PENpin;
+			#ifdef HSEN
+
+			if(p->dutycycle < 0.01f){
+				//Do not, ever put on the high side FET continuesly.
+				//e.g. when the duty cycle is zero.
+				p->HSEport->BRR = p->HSEpin;
+			}
+
+			#ifdef HW_TOPOLOGY_BOOST
+			else if(p->Iind > settings.PhaseHighSideEnableCurrent){
+				if(disable_voutlim == false){
+					p->HSEport->BSRR = p->HSEpin;
+				}
+			}
+			#elif defined HW_TOPOLOGY_BUCK
+			else if(disable_voutlim == false){
 				p->HSEport->BSRR = p->HSEpin;
 			}
-		}
-#elif defined HW_TOPOLOGY_BUCK
-		else if(disable_voutlim == false){
-			p->HSEport->BSRR = p->HSEpin;
-		}
-#endif
-		else{
+			#endif
+			else{
+				p->HSEport->BRR = p->HSEpin;
+			}
+
+			#else
+					p->HSEport->BRR = p->HSEpin;
+			#endif
+			#endif
+		}else{
 			p->HSEport->BRR = p->HSEpin;
+			p->PENport->BRR = p->PENpin;
 		}
-
-#else
-		p->HSEport->BRR = p->HSEpin;
-#endif
-#endif
-
-		pwm_setDuty(p->dutycycle);
-
 	}
 
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+
+
 	//Do Lower priority duties now.
+
+	//Calculate converter input and output currents
+	//p->Power = (p->Ihigh*p->Vhigh)*1.0e-6f;
+	p->Power = (p->Ilow*p->Vlow)*1.0e-6f;
+
+	if(p->Power){
+		//p->eff = (p->Power)/(p->Ilow*p->Vlow*1.0e-6f);
+		p->eff = ((p->Ihigh*p->Vhigh)*1.0e-6f)/(p->Power);
+	}else{
+		p->eff = 0;
+	}
+
 	EMA(meter.Iind, p->Iind*0.001f,settings.meterfilterCoeficient);
 	EMA(meter.Ihigh, p->Ihigh*0.001f,settings.meterfilterCoeficient);
 	EMA(meter.Ilow, p->Ilow*0.001f,settings.meterfilterCoeficient);
@@ -440,6 +499,7 @@ bool control_check_parameters(ConverterSettings_t* s, CalibrationData_t * c){
 void control_disable(void){
 	phase.HSEport->BRR = phase.HSEpin;
 	phase.PENport->BRR = phase.PENpin;
+	phase.pwm_enabled =  false;
 	phase.dutycycle = 0;
 	phase.enabled = false;
 	pwm_disable();
@@ -453,18 +513,22 @@ inline void modConverterPWMOutputDisable(){
 	DREN_GPIO_Port->BRR = DREN_Pin;
 #endif
 	phase.enabled = false;
+	phase.pwm_enabled =  false;
 }
 
 inline void modConverterPWMOutputEnable() {
-	if(settings.outputEnable){
-#ifndef SIMULATION
-		phase.PENport->BSRR = phase.PENpin;
-		DREN_GPIO_Port->BSRR = DREN_Pin;
-#endif
-		phase.enabled = true;
-
-	}else{
-		modConverterPWMOutputDisable();
+	//Make sure MPPT is not enabled when a fault is active.
+	if(phase.fault == Converter_OK){
+		if(settings.outputEnable){
+	#ifndef SIMULATION
+			//phase.PENport->BSRR = phase.PENpin;
+			DREN_GPIO_Port->BSRR = DREN_Pin;
+	#endif
+			phase.enabled = true;
+			//phase.pwm_enabled =  true;
+		}else{
+			modConverterPWMOutputDisable();
+		}
 	}
 }
 

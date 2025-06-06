@@ -45,7 +45,7 @@ void analog_init() {
 
 	//Initialize ADC's
 	hadc1.Instance = ADC1;
-	hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
+	hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV16;
 	hadc1.Init.Resolution = ADC_RESOLUTION_12B;
 	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc1.Init.GainCompensation = 0;
@@ -62,7 +62,7 @@ void analog_init() {
 	hadc1.Init.OversamplingMode = DISABLE;
 
 	hadc2.Instance = ADC2;
-	hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
+	hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV16;
 	hadc2.Init.Resolution = ADC_RESOLUTION_12B;
 	hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc2.Init.GainCompensation = 0;
@@ -79,7 +79,7 @@ void analog_init() {
 	hadc2.Init.OversamplingMode = DISABLE;
 
 	hadc3.Instance = ADC3;
-	hadc3.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
+	hadc3.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV16;
 	hadc3.Init.Resolution = ADC_RESOLUTION_12B;
 	hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc3.Init.GainCompensation = 0;
@@ -96,7 +96,7 @@ void analog_init() {
 	hadc3.Init.OversamplingMode = DISABLE;
 
 	hadc4.Instance = ADC4;
-	hadc4.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
+	hadc4.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV16;
 	hadc4.Init.Resolution = ADC_RESOLUTION_12B;
 	hadc4.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc4.Init.GainCompensation = 0;
@@ -113,7 +113,7 @@ void analog_init() {
 	hadc4.Init.OversamplingMode = DISABLE;
 
 	hadc5.Instance = ADC5;
-	hadc5.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
+	hadc5.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV16;
 	hadc5.Init.Resolution = ADC_RESOLUTION_12B;
 	hadc5.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc5.Init.GainCompensation = 0;
@@ -193,6 +193,9 @@ void analog_init() {
 }
 
 void ADC1_2_IRQHandler(void) {
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+
 	uint32_t tmp_isr = ADC1->ISR;
 	uint32_t tmp2_isr = ADC2->ISR;
 
@@ -212,6 +215,9 @@ void ADC1_2_IRQHandler(void) {
 }
 
 void ADC3_IRQHandler(void) {
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+
 	uint32_t tmp_isr = ADC3->ISR;
 	//uint32_t tmp_ier = ADC3->IER;
 
@@ -224,6 +230,8 @@ void ADC3_IRQHandler(void) {
 }
 
 void ADC4_IRQHandler(void) {
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
 
 	uint32_t tmp_isr = ADC4->ISR;
 	//uint32_t tmp_ier = ADC4->IER;
@@ -239,6 +247,8 @@ void ADC4_IRQHandler(void) {
 }
 
 void ADC5_IRQHandler(void) {
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
 
 	HAL_ADC_IRQHandler(&hadc5);
 }

@@ -72,6 +72,12 @@ typedef struct ConverterPhase_t{
 
 	//states
 	float Vlowm1;
+	float Iindm1;
+
+	//Predictions
+	float Iind_pred;
+	float Vhigh_pred;
+	float Vlow_pred;
 
 	//Inputs
 	float Vsp;
@@ -81,6 +87,7 @@ typedef struct ConverterPhase_t{
 	float Ihighlim;
 
 	bool enabled;
+	bool pwm_enabled;
 
 	//Output
 	float dutycycle;

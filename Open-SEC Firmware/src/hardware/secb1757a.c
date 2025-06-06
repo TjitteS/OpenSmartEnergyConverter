@@ -71,6 +71,13 @@ modConfig_t defaultConvig = {
 				.PO_StepSizeGain 				=  1.0f,	// float P&O Step Size Gain;
 				.jump_PowerThreshold 			=  50, 		//float jump_PowerThreshold;
 				.jump_Rate 						=  0, 		//int jump_Rate;
+
+				.Sweep_eneable 					= false,
+				.Sweep_interval 				= 5000,
+				.Sweep_timestep 				= 1,
+				.Sweep_direction 				= false,
+				.Sweep_datapoints 				= 16,
+				.Sweep_publishOnCan 			= false,
 			},
 		.cansettings = (modCanSettings_t){
 				.baudrate 						=  250,  	// kbps
@@ -174,6 +181,7 @@ void hw_adc_init(){
 
 	sConfig.Channel = ADC_CHANNEL_VOPAMP2;
 	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	//sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
 	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
 	sConfig.Channel = ADC_CHANNEL_VOPAMP3_ADC3;
