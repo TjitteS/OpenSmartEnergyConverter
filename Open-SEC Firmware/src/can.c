@@ -205,6 +205,10 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 	unsigned int rxbuf_len;
 	uint16_t crc;
 
+	float sweep_start, sweep_end;
+	int32_t sweep_ind;
+	uint8_t sweep_size;
+
 	if (destinaitonId == canid) {
 		switch (packetid) {
 		case CAN_PACKET_Power:
@@ -297,6 +301,19 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 			}
 
 			modMpptSetMode((modMPPTmode_t)rxmsg->data[0]);
+			break;
+
+		case CAN_CMD_SWEEP:
+			sweep_ind = 0;
+			sweep_start = 1.0e3f*buffer_get_float16(rxmsg->data, 1.0e2f,&sweep_ind);
+			sweep_end   = 1.0e3f*buffer_get_float16(rxmsg->data, 1.0e2f,&sweep_ind);
+			sweep_size = buffer_get_uint8(rxmsg->data,&sweep_ind);
+
+			if (sweep_size > MPPT_SWEEP_SIZE){
+				sweep_size = MPPT_SWEEP_SIZE;
+			}
+
+			modMpptStartSweep(sweep_start, sweep_end, sweep_size);
 			break;
 
 		default:
@@ -582,5 +599,18 @@ void FDCAN2_IT1_IRQHandler(void) {
 
 }
 
+void modCANSendSweep(float* is, float*vs, int size){
+
+	uint8_t data[8];
+
+	for (int i = 0; i < size; i++){
+		int32_t index = 0;
+		buffer_append_int8(data, i, &index);
+		buffer_append_float16(data, is[i], 1e2f, &index);
+		buffer_append_float16(data, vs[i], 2.0e3f, &index);
+
+		modCANTransmitStandardID(modCANGetCANID(canid, CAN_PACKET_Sweep), data, (uint32_t) index);
+	}
+}
 
 

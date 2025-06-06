@@ -37,6 +37,7 @@
 typedef enum {
 	CAN_PACKET_Power,
 	CAN_PACKET_status, //(Limitl, Fault, Temperatures,)
+	CAN_PACKET_Sweep,
 	CAN_PACKET_FILL_RX_BUFFER = 0x05,
 	CAN_PACKET_FILL_RX_BUFFER_LONG,
 	CAN_PACKET_PROCESS_RX_BUFFER,
@@ -44,7 +45,7 @@ typedef enum {
 
 	//TODO Add can interface commands here
 	CAN_CMD_SETMODE,
-
+	CAN_CMD_SWEEP,
 	CAN_PACKET_MSGCOUNT,
 } CAN_PACKET_ID;
 
@@ -67,5 +68,6 @@ void modCANTransmitExtID(uint32_t id, uint8_t *data, uint8_t len);
 void modCANTransmitStandardID(uint32_t id, uint8_t *data, uint8_t len);
 void modCANSendBuffer(uint8_t controllerID, uint8_t *data, unsigned int len, bool send);
 void modCANSendPacketWrapper(unsigned char *data, unsigned int len);
+void modCANSendSweep(float* is, float*vs, int size);
 
 #endif /* SRC_CAN_H_ */
