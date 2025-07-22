@@ -208,6 +208,7 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 	float sweep_start, sweep_end;
 	int32_t sweep_ind;
 	uint8_t sweep_size;
+	float setpoint;
 
 	if (destinaitonId == canid) {
 		switch (packetid) {
@@ -314,6 +315,17 @@ void modCanHandleRxMsg(modCanRxQue_t *rxmsg) {
 			}
 
 			modMpptStartSweep(sweep_start, sweep_end, sweep_size);
+			break;
+
+
+		case CAN_CMD_SET_OUTPUT_VOLTAGE_LIMIT:
+			setpoint = 1.0e3f*buffer_get_float16(rxmsg->data, 1.0e2f, &sweep_ind);
+			control_set_output_voltage_limit(setpoint);
+			break;
+
+		case CAN_CMD_SET_OUTPUT_CURRENT_LIMIT:
+			setpoint = 1.0e3f*buffer_get_float16(rxmsg->data, 2.0e3f, &sweep_ind);
+			control_set_output_current_limit(setpoint);
 			break;
 
 		default:
@@ -606,8 +618,8 @@ void modCANSendSweep(float* is, float*vs, int size){
 	for (int i = 0; i < size; i++){
 		int32_t index = 0;
 		buffer_append_int8(data, i, &index);
-		buffer_append_float16(data, is[i], 1e2f, &index);
-		buffer_append_float16(data, vs[i], 2.0e3f, &index);
+		buffer_append_float16(data, is[i], 2.0e3f, &index);
+		buffer_append_float16(data, vs[i], 1.0e2f, &index);
 
 		modCANTransmitStandardID(modCANGetCANID(canid, CAN_PACKET_Sweep), data, (uint32_t) index);
 	}

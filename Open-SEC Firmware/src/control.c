@@ -673,6 +673,24 @@ float control_get_regulated_current(){
 	return -meter.Ihigh;
 #endif
 }
+
+void control_set_output_current_limit(float c_mA){
+	if(c_mA > settings.HighSideCurrentLimitSoft)
+		c_mA = settings.HighSideCurrentLimitSoft;
+	if(c_mA < HW_LIMIT_HS_CURRENT_SOFT_MIN)
+		c_mA = HW_LIMIT_HS_CURRENT_SOFT_MIN;
+	phase.Ihighlim = c_mA;
+}
+
+void control_set_output_voltage_limit(float v_mV){
+	if(v_mV > settings.HighSideVoltageLimitSoft)
+		v_mV = settings.HighSideCurrentLimitSoft;
+	if(v_mV < HW_LIMIT_HS_VOLTAGE_SOFT_MIN)
+		v_mV = HW_LIMIT_HS_VOLTAGE_SOFT_MIN;
+
+	phase.Vhighlim = v_mV;
+}
+
 /*
 void modConverterSetInputVoltage_dep(float v){
 
@@ -735,3 +753,8 @@ void scope_start(bool OnFault){
 
 
 }
+
+
+
+
+

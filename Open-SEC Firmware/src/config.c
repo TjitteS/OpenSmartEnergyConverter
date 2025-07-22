@@ -102,6 +102,11 @@ void modConfigLimitSettings(modConfig_t* c){
 	if(c->settings.HighSideVoltageLimitSoft > HW_LIMIT_HS_VOLTAGE_HARD * 0.95) c->settings.HighSideVoltageLimitSoft = HW_LIMIT_HS_VOLTAGE_HARD * 0.95;
 	if(c->settings.LowSideVoltageLimitSoft > HW_LIMIT_LS_VOLTAGE_HARD * 0.95) c->settings.LowSideVoltageLimitSoft = HW_LIMIT_LS_VOLTAGE_HARD * 0.95;
 
+	if(c->settings.HighSideCurrentLimitSoft   < HW_LIMIT_HS_CURRENT_SOFT_MIN) c->settings.HighSideCurrentLimitSoft   = HW_LIMIT_HS_CURRENT_SOFT_MIN;
+	if(c->settings.LowSideCurrentMaxLimitSoft < HW_LIMIT_LS_CURRENT_SOFT_MIN) c->settings.LowSideCurrentMaxLimitSoft = HW_LIMIT_LS_CURRENT_SOFT_MIN;
+	if(c->settings.HighSideVoltageLimitSoft   < HW_LIMIT_HS_VOLTAGE_SOFT_MIN) c->settings.HighSideVoltageLimitSoft   = HW_LIMIT_HS_VOLTAGE_SOFT_MIN;
+	if(c->settings.LowSideVoltageLimitSoft    < HW_LIMIT_LS_VOLTAGE_SOFT_MIN) c->settings.LowSideVoltageLimitSoft    = HW_LIMIT_LS_VOLTAGE_SOFT_MIN;
+
 	if(c->settings.LowSideCurrentMinLimitSoft < -500.0f)c->settings.LowSideCurrentMinLimitSoft = -500.0f;
 	if(c->settings.PhaseHighSideEnableCurrent < -500.0f)c->settings.PhaseHighSideEnableCurrent = -500.0f;
 

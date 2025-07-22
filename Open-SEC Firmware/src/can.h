@@ -36,7 +36,7 @@
 
 typedef enum {
 	CAN_PACKET_Power,
-	CAN_PACKET_status, //(Limitl, Fault, Temperatures,)
+	CAN_PACKET_status, //(Limit, Fault, Temperatures,)
 	CAN_PACKET_Sweep,
 	CAN_PACKET_FILL_RX_BUFFER = 0x05,
 	CAN_PACKET_FILL_RX_BUFFER_LONG,
@@ -46,6 +46,8 @@ typedef enum {
 	//TODO Add can interface commands here
 	CAN_CMD_SETMODE,
 	CAN_CMD_SWEEP,
+	CAN_CMD_SET_OUTPUT_VOLTAGE_LIMIT,
+	CAN_CMD_SET_OUTPUT_CURRENT_LIMIT,
 	CAN_PACKET_MSGCOUNT,
 } CAN_PACKET_ID;
 

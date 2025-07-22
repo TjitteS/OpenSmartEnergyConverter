@@ -265,6 +265,9 @@ float control_get_setpoint(void);
 float control_get_regulated_voltage();
 float control_get_regulated_current();
 
+void control_set_output_current_limit(float c_mA);
+void control_set_output_voltage_limit(float v_mV);
+
 void scope_trigger_fault();
 void scope_trigger();
 void scope_start(bool OnFault);
