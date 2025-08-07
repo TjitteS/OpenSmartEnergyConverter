@@ -53,7 +53,7 @@
 #define HW_LIMIT_LS_VOLTAGE_HARD 184210
 #define HW_LIMIT_HS_CURRENT_HARD 12000
 #define HW_LIMIT_LS_CURRENT_HARD 12000
-#define HW_MAX_CURRENT_SETTING   9500.0f
+#define HW_MAX_CURRENT_SETTING   9000.0f
 
 #define HW_LIMIT_LS_VOLTAGE_SOFT_MIN 5000.0f
 #define HW_LIMIT_LS_CURRENT_SOFT_MIN 0.0f
@@ -73,7 +73,8 @@
 
 #define HW_Q                   0.5f
 #define HW_KLIM                0.8f
-#define HW_KLIM_VOUT           0.6f
+#define HW_KLIM_VOUT           0.4f
+#define HW_IOUT_MAXDUTY        0.7f
 #define HW_CONTROLLERFREQUENCY 20
 #define HW_delay			   45e-6
 #define HW_IOUT_EN_HYST		   800 //mA

@@ -143,6 +143,11 @@ void control_controlloop(ConverterPhase_t* p){
 
 	float Ilimmaxvout = Ioutlim/(1.0f-p->dutycycle);
 
+	//Limit the output current loop gain at high duty cycles (low input voltages).
+	if(p->dutycycle > HW_IOUT_MAXDUTY){
+		Ilimmaxvout = Ioutlim/(1.0f-HW_IOUT_MAXDUTY);
+	}
+
 	//Limit the input current to higher than 0, to prevent current under-shoot.
 	//if(Ilimmaxvout < 0.0){
 	//	Ilimmaxvout = 0.0f;

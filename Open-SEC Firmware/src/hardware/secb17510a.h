@@ -72,6 +72,7 @@
 #define HW_Q                   0.5f
 #define HW_KLIM                0.8f
 #define HW_KLIM_VOUT           0.4f
+#define HW_IOUT_MAXDUTY        0.7f
 #define HW_CONTROLLERFREQUENCY 20
 #define HW_delay			   40e-6
 #define HW_IOUT_EN_HYST		   800 //mA
