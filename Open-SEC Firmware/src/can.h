@@ -38,6 +38,8 @@ typedef enum {
 	CAN_PACKET_Power,
 	CAN_PACKET_status, //(Limit, Fault, Temperatures,)
 	CAN_PACKET_Sweep,
+	//0x03 reserved
+	//0x04 reserved
 	CAN_PACKET_FILL_RX_BUFFER = 0x05,
 	CAN_PACKET_FILL_RX_BUFFER_LONG,
 	CAN_PACKET_PROCESS_RX_BUFFER,

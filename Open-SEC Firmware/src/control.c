@@ -654,7 +654,7 @@ void control_set_setpoint(float v){
 #elif defined HW_TOPOLOGY_BUCK
 		if(v > settings.HighSideVoltageLimitSoft)v = settings.HighSideVoltageLimitSoft;
 #endif
-		if(v < HW_MIN_SETPOINT)v = HW_MIN_SETPOINT;
+		if(v < HW_LIMIT_LS_VOLTAGE_SOFT_MIN)v = HW_LIMIT_LS_VOLTAGE_SOFT_MIN;
 		phase.Vsp = v;
 	}
 }

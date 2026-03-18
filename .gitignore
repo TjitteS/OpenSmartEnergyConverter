@@ -45,6 +45,10 @@
 /Open-SEC Firmware/SEC-B80-8A/*
 /Open-SEC Firmware/SEC-B80-8A-SIM/
 /Open-SEC Firmware/SEC-B80-8A-SIM/*
+/Open-SEC Firmware/SEC-B80-8B
+/Open-SEC Firmware/SEC-B80-8B/*
+/Open-SEC Firmware/SEC-B80-8B-SIM/
+/Open-SEC Firmware/SEC-B80-8B-SIM/*
 
 /Open-SEC Bootloader/Debug
 /Open-SEC Bootloader/Debug/*
