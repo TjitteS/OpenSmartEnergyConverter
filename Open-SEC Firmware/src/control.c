@@ -460,7 +460,11 @@ void control_controlloop(ConverterPhase_t* p){
 	}
 
 #ifdef SIMULATION
-	modTestingSimstep(&simstate, Ts/1,&phase);
+#define STEPS 2
+	for (int step = 0; step < STEPS; step++){
+		modTestingSimstep(&simstate, Ts/STEPS, &phase);
+	}
+
 #endif
 }
 

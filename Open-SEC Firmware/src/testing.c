@@ -214,8 +214,16 @@ void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* 
 	}
 
 	state->Iind 	+= dIinddt;
-	state->Vlow	+= dVlowdt;
+	state->Vlow		+= dVlowdt;
 	state->Vhigh	+= dVhighdt;
+
+	//Limit state variables.
+	if(state->Iind  > 100)state->Iind = 100;
+	if(state->Vlow  > 1000)state->Vlow = 1000;
+	if(state->Vhigh > 1000)state->Vhigh = 1000;
+	if(state->Iind  < -100)state->Iind = -100;
+	if(state->Vlow  < -1)state->Vlow = -1;
+	if(state->Vhigh < -1)state->Vhigh = -1;
 
 	lossedEnergy += dt*((state->Vlow*Ilow)-mpp);
 	runtime += dt;
