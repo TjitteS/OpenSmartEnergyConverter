@@ -60,10 +60,10 @@
 #define HW_LIMIT_HS_VOLTAGE_SOFT_MIN  20000.0f
 #define HW_LIMIT_HS_CURRENT_SOFT_MIN 0.0f
 
-#define HW_SWITCHINGFREQUENCY  59
+#define HW_SWITCHINGFREQUENCY  82
 #define HW_ADC_DELAY           0.3f
-#define HW_DEADTIMERISING      141
-#define HW_DEADTIMEFALLING     45
+#define HW_DEADTIMERISING      40
+#define HW_DEADTIMEFALLING     20
 #define HW_L                   84e-6
 #define HW_RLINT               30e-3
 #define HW_CLOW                220.0e-6f
