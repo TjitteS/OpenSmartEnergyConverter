@@ -67,8 +67,12 @@
 #define HW_KLIM_VOUT           0.4f
 #define HW_IOUT_MAXDUTY        0.7f
 #define HW_CONTROLLERFREQUENCY 20
-#define HW_delay			   30e-6
+#define HW_delay			   30e-6f
 #define HW_IOUT_EN_HYST		   800 //mA
+
+#ifdef SIMULATION
+#define HW_delay			   0.0f
+#endif
 
 #define HW_TIMERINDEX 			HRTIM_TIMERINDEX_TIMER_B
 #define HW_HRTIM_ADCTRIGGER 	HRTIM_ADCTRIGGEREVENT13_TIMERB_CMP3
