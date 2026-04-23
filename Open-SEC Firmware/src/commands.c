@@ -350,6 +350,8 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			scope.channel[0].source = buffer_get_uint8(data, &ind);
 			scope.channel[1].source = buffer_get_uint8(data, &ind);
 			bool fault = buffer_get_int8(data, &ind);
+			bool autotrigger = buffer_get_int8(data, &ind);
+
 			if(scope.samples > CONVERTER_SCOPE_SAMPLESIZE){
 				scope.samples = CONVERTER_SCOPE_SAMPLESIZE;
 			}
@@ -360,6 +362,12 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			modCommandsSendBuffer[ind++] = packet_id;
 			buffer_append_float32_auto(modCommandsSendBuffer, scope.samplerate, &ind);
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
+
+			if (autotrigger){
+				HAL_Delay(50);
+				scope_trigger();
+			}
+
 			break;
 
 		case COMM_MPPT_SCOPE_STEP:
