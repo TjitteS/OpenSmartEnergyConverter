@@ -62,8 +62,8 @@
 #define HW_CHIGH               224e-6f
 #define HW_RLINT               5e-3f
 
-#define HW_Q                   0.6f
-#define HW_KLIM                0.8f
+#define HW_Q                   0.8f
+#define HW_KLIM                0.9f
 #define HW_KLIM_VOUT           0.4f
 #define HW_IOUT_MAXDUTY        0.7f
 #define HW_CONTROLLERFREQUENCY 20
