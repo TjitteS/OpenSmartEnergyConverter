@@ -1,0 +1,8 @@
+stm32g4xx_ll_utils.c:278:13:LL_SetFlashLatency.part.0	11
+stm32g4xx_ll_utils.c:630:20:UTILS_EnablePLLAndSwitchSystem	10
+stm32g4xx_ll_utils.c:168:6:LL_Init1msTick	1
+stm32g4xx_ll_utils.c:184:6:LL_mDelay	4
+stm32g4xx_ll_utils.c:264:6:LL_SetSystemCoreClock	1
+stm32g4xx_ll_utils.c:278:13:LL_SetFlashLatency	12
+stm32g4xx_ll_utils.c:398:13:LL_PLL_ConfigSystemClock_HSI	9
+stm32g4xx_ll_utils.c:480:13:LL_PLL_ConfigSystemClock_HSE	10

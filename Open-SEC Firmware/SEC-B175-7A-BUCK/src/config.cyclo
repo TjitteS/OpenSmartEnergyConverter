@@ -1,0 +1,8 @@
+config.c:52:6:modConfigStoreConfig	1
+config.c:60:6:modConfigLoadConfig	1
+config.c:67:6:modConfigSetConfig	1
+config.c:73:6:modConfigStoreAndLoadDefaultConfig	23
+config.c:79:6:modConfigStoreDefaultConfig	1
+config.c:85:6:modConfigLoadDefaultConfig	23
+config.c:92:6:modConfigLimitSettings	23
+config.c:27:14:modConfigInit	24

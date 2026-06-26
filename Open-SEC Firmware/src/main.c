@@ -26,6 +26,7 @@
 #include "terminal.h"
 #include "leds.h"
 #include "config.h"
+
 #include "uart.h"
 #include "testing.h"
 #include "dma.h"

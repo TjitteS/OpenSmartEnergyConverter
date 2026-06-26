@@ -8,6 +8,7 @@
 #include "flash.h"
 
 extern modConfig_t* acktiveConfig;
+extern ConverterMueasurements_t meter_slow;
 
 static uint8_t modCommandsSendBuffer[PACKET_MAX_PL_LEN];
 static void(*modCommandsSendFunction)(unsigned char *data, unsigned int len) = 0;
@@ -62,7 +63,14 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			modCommandsSendBuffer[ind++] = FW_VERSION_MAJOR;
 			modCommandsSendBuffer[ind++] = FW_VERSION_MINOR;
 			strcpy((char*)(modCommandsSendBuffer + ind), acktiveConfig->calData.HardwareName);
-			ind += strlen(acktiveConfig->calData.HardwareName) + 1;
+			ind += strlen(acktiveConfig->calData.HardwareName);
+
+#ifdef HW_TOPOLOGY_BUCK
+			strcpy((char*)(modCommandsSendBuffer + ind), "-BUCK");
+			ind += strlen("-BUCK");
+#endif
+			ind += 1;
+
 			memcpy(modCommandsSendBuffer + ind, (void*) UID_BASE, 12);
 			ind += 12;
 
@@ -99,16 +107,35 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 		case COMM_GET_VALUES:
 			ind = 0;
 			modCommandsSendBuffer[ind++] = COMM_GET_VALUES;
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.Iind , &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.Ihigh, &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.Ilow, &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.Vlow, &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.Vhigh, &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.TemperatureHeatsink, &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.TemperatureAmbient, &ind);
-			buffer_append_float32_auto(modCommandsSendBuffer, meter.Eff, &ind);
+
+#ifdef HW_TOPOLOGY_BOOST
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Iind , &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Ihigh, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Ilow, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Vlow, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Vhigh, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.TemperatureHeatsink, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.TemperatureAmbient, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Eff, &ind);
 			buffer_append_uint8(modCommandsSendBuffer, phase.mode,  &ind);
 			buffer_append_uint8(modCommandsSendBuffer, phase.fault,  &ind);
+			modCommandsSendPacket(modCommandsSendBuffer, ind);
+
+#elif defined HW_TOPOLOGY_BUCK
+			buffer_append_float32_auto(modCommandsSendBuffer, -meter_slow.Ihigh , &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, -meter_slow.Ilow, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, -meter_slow.Ihigh, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Vhigh, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Vlow, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.TemperatureHeatsink, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.TemperatureAmbient, &ind);
+			buffer_append_float32_auto(modCommandsSendBuffer, meter_slow.Eff, &ind);
+			buffer_append_uint8(modCommandsSendBuffer, phase.mode,  &ind);
+			buffer_append_uint8(modCommandsSendBuffer, phase.fault,  &ind);
+
+
+#endif
+
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
 			break;
 		
@@ -117,10 +144,19 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			//Before writing the data, disable the outptut.
 			main_halt_risky();
 			acktiveConfig->settings.meterfilterCoeficient = buffer_get_float32_auto(data,&ind);
+
+#ifdef HW_TOPOLOGY_BOOST
 			acktiveConfig->settings.HighSideVoltageLimitSoft    = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.LowSideVoltageLimitSoft     = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.HighSideCurrentLimitSoft    = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.LowSideCurrentMaxLimitSoft  = 1.0e3f * buffer_get_float32_auto(data,&ind);
+#else
+			acktiveConfig->settings.LowSideVoltageLimitSoft     = 1.0e3f * buffer_get_float32_auto(data,&ind);
+			acktiveConfig->settings.HighSideVoltageLimitSoft    = 1.0e3f * buffer_get_float32_auto(data,&ind);
+			acktiveConfig->settings.LowSideCurrentMaxLimitSoft  = 1.0e3f * buffer_get_float32_auto(data,&ind);
+			acktiveConfig->settings.HighSideCurrentLimitSoft    = 1.0e3f * buffer_get_float32_auto(data,&ind);
+#endif
+
 			acktiveConfig->settings.PhaseHighSideEnableCurrent  = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.LowSideCurrentMinLimitSoft  = 1.0e3f * buffer_get_float32_auto(data,&ind);
 			acktiveConfig->settings.TemperatureLimitStart		= buffer_get_float32_auto(data,&ind);
@@ -128,6 +164,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			acktiveConfig->settings.outputEnable = buffer_get_int8(data,&ind);
 			acktiveConfig->settings.outputEnalbeOnStartup  = buffer_get_int8(data,&ind);
 			acktiveConfig->settings.startupDelay = (uint32_t)buffer_get_uint16(data, &ind);
+			acktiveConfig->settings.DisableHighSideCurrentFault = buffer_get_int8(data,&ind);
 
 			acktiveConfig->mpptsettings.PO_Stepsize = buffer_get_float32_auto(data,&ind);
 			acktiveConfig->mpptsettings.PO_Timestep = (uint32_t)buffer_get_uint16(data, &ind);
@@ -170,10 +207,18 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 
 			//settings
 			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.meterfilterCoeficient           ,&ind);
+
+#ifdef HW_TOPOLOGY_BOOST
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.HighSideVoltageLimitSoft    ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideVoltageLimitSoft     ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.HighSideCurrentLimitSoft    ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideCurrentMaxLimitSoft  ,&ind);
+#else
+			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideVoltageLimitSoft     ,&ind);
+			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.HighSideVoltageLimitSoft    ,&ind);
+			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideCurrentMaxLimitSoft  ,&ind);
+			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.HighSideCurrentLimitSoft    ,&ind);
+#endif
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.PhaseHighSideEnableCurrent ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,1.0e-3f*acktiveConfig->settings.LowSideCurrentMinLimitSoft ,&ind);
 			buffer_append_float32_auto(modCommandsSendBuffer,acktiveConfig->settings.TemperatureLimitStart ,&ind);
@@ -181,6 +226,7 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			buffer_append_int8		(modCommandsSendBuffer,acktiveConfig->settings.outputEnable          	 ,&ind);
 			buffer_append_int8		(modCommandsSendBuffer,acktiveConfig->settings.outputEnalbeOnStartup        	 ,&ind);
 			buffer_append_uint16	(modCommandsSendBuffer, acktiveConfig->settings.startupDelay, &ind);
+			buffer_append_int8		(modCommandsSendBuffer,acktiveConfig->settings.DisableHighSideCurrentFault       	 ,&ind);
 
 			buffer_append_float32_auto(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Stepsize,&ind);
 			buffer_append_uint16	(modCommandsSendBuffer, acktiveConfig->mpptsettings.PO_Timestep, &ind);
@@ -219,10 +265,13 @@ void modCommandsProcessPacket(unsigned char *data, unsigned int len) {
 			modCANSendBuffer(data[0], data + 1, len - 1, false);
 			break;
 		case COMM_STORE_MPPT_CONF:
+			main_halt_risky();
 			modConfigStoreConfig();
 			ind = 0;
 			modCommandsSendBuffer[ind++] = packet_id;
 			modCommandsSendPacket(modCommandsSendBuffer, ind);
+
+			main_init_after_config();
 			break;
 
 		case COMM_WRITE_CALDATA:

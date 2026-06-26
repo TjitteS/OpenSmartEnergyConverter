@@ -1,0 +1,4 @@
+hardware.c:19:6:hw_setio_output	1
+hardware.c:27:6:hw_setio_input	1
+hardware.c:35:6:hw_setio_af	1
+hardware.c:45:6:hw_setio_analog	1

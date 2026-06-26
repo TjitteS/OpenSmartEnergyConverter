@@ -1,0 +1,15 @@
+can.c:26:10:modGetCanGetID	1
+can.c:64:6:modCANinit	10
+can.c:175:6:HAL_FDCAN_RxFifo0Callback	3
+can.c:189:6:modCanHandleRxMsg	22
+can.c:418:10:modCANGetCANEXID	1
+can.c:433:10:modCANGetCANID	1
+can.c:448:6:modCANTransmit	5
+can.c:341:6:modCANtask	28
+can.c:476:6:modCANTransmitStandardID	1
+can.c:504:6:modCANTransmitExtID	1
+can.c:536:6:modCANSendBuffer	7
+can.c:598:6:modCANSendPacketWrapper	1
+can.c:602:6:FDCAN2_IT0_IRQHandler	1
+can.c:608:6:FDCAN2_IT1_IRQHandler	1
+can.c:614:6:modCANSendSweep	3

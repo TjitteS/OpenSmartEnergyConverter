@@ -22,7 +22,7 @@
 #include "stdio.h"
 
 #define FW_VERSION_MAJOR 1
-#define FW_VERSION_MINOR 12
+#define FW_VERSION_MINOR 13
 
 #if defined(HW_REBOOST)
 #include "hw_reboost.h"
@@ -54,6 +54,7 @@
 
 #define HW_TEMP_LIM 85.0f
 #define HW_MIN_SETPOINT 5000.0f
+#define SLOW_METER_COEF 0.999f
 
 
 extern ADC_HandleTypeDef hadc1;

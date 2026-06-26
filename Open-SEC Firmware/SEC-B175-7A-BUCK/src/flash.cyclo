@@ -1,0 +1,6 @@
+flash.c:21:10:modFlashEraseNewAppData	5
+flash.c:69:10:modFlashEraseMainAppData	4
+flash.c:127:10:modFlashWriteNewAppData	7
+flash.c:168:10:modFlashCopyNewAppToMainApp	6
+flash.c:197:6:modFlashJumpToBootloader	1
+flash.c:235:6:modFlashJumpToMainApplication	1

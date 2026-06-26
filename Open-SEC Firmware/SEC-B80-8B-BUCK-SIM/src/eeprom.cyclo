@@ -1,0 +1,4 @@
+eeprom.c:29:6:eeprom_init	3
+eeprom.c:45:6:eeprom_valid	2
+eeprom.c:54:6:eeprom_load	1
+eeprom.c:58:6:eeprom_save	3

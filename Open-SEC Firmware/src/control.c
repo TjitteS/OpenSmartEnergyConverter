@@ -28,6 +28,7 @@
 
 ConverterPhase_t phase;
 ConverterMueasurements_t meter;
+ConverterMueasurements_t meter_slow;
 ConverterScope_t scope;
 
 CalibrationData_t cal;
@@ -37,6 +38,7 @@ float Ts; //Sample period, s
 float ControllerR;
 extern uint32_t adc5data[6];
 
+modTestingSimState_t simstate_c;
 
 void control_init(const ConverterSettings_t* s, const CalibrationData_t * c) {
 	//Check if settings are valid.
@@ -68,6 +70,11 @@ void control_init(const ConverterSettings_t* s, const CalibrationData_t * c) {
 	analog_init();
 
 	Ts = pwm_GetControllerPeriod();
+
+#ifdef SIMULATION
+	pwm_init(HW_SWITCHINGFREQUENCY*0.5, HW_CONTROLLERFREQUENCY*0.5, HW_DEADTIMERISING, HW_DEADTIMEFALLING, HW_ADC_DELAY);
+#endif
+
 	ControllerR = sqrtf(HW_L/HW_CLOW)/ HW_Q  - HW_RLINT;
 
 	HAL_Delay(100);
@@ -78,13 +85,13 @@ float t;
 void control_controlloop(ConverterPhase_t* p){
 
 	//LED3_GPIO_Port->BSRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
 
 	bool TemperatureLimited = false;
 	bool OutputCurrentLimited = false;
 	bool OutputVoltageLimited = false;
 
-	//Reset the mode variable.
-	p->mode = PhaseMode_CIV;
 
 
 
@@ -104,7 +111,7 @@ void control_controlloop(ConverterPhase_t* p){
 				+ HW_delay*HW_delay/(HW_L*HW_CLOW)*(p->Ilow - p->Iind); //second order (reduced) taylor term.
 
 		p->Vhigh_pred = p->Vhigh;// + HW_delay/HW_CHIGH*(p->dutycycle*p->Iind  -  p->Ihigh);
-		p->Vlow_pred  = p->Vlow  + HW_delay/HW_CLOW *(p->Ilow - p->Iind);
+		p->Vlow_pred  = p->Vlow;//  + HW_delay/HW_CLOW *(p->Ilow - p->Iind);
 	}else{
 		p->Iind_pred  = p->Iind
 				+ 0.5f*HW_delay/HW_L*(p->Vlow - (1.0f-p->dutycycle)*p->Vhigh - HW_RLINT*p->Iind); //1st order taylor term
@@ -169,88 +176,96 @@ void control_controlloop(ConverterPhase_t* p){
 	float Vnlimlo = +p->Vlow_pred - (HW_RLINT * p->Iind_pred) - (HW_KLIM*HW_L*(Ilim - p->Iind_pred)/Ts )
 		+ Ts/(2*HW_CLOW)*(p->Ilow - p->Iind_pred);
 
+	//Reset the mode variable.
+
+	PhaseMode_t newmode = PhaseMode_CIV;
+
 	//Unlimited controller
 	Vn = Vnn + (p->Iind_pred*ControllerR);
 
 	//Limit Vnn to limit phase current
 	if(Vn > Vnlimup){
 		Vn = Vnlimup;
-		p->mode = PhaseMode_MinInputCurrent;
+		newmode = PhaseMode_MinInputCurrent;
 	}
 
 	if(Vn < Vnlimlo) {
 		Vn = Vnlimlo;
-		p->mode = PhaseMode_CIC;
+		newmode = PhaseMode_CIC;
 	}
 
 	//Select correct operating mode
 
 	if(p->mode == PhaseMode_CIC){
 		if(TemperatureLimited){
-			p->mode = PhaseMode_TD;
+			newmode = PhaseMode_TD;
 		}
 
 		if(OutputVoltageLimited){
-			if(OutputCurrentLimited)p->mode = PhaseMode_COC;
-			else p->mode = PhaseMode_COV;
+			if(OutputCurrentLimited)newmode = PhaseMode_COC;
+			else newmode = PhaseMode_COV;
 		}
 	}
-
+	p->mode = newmode;
 
 #elif defined(HW_TOPOLOGY_BUCK)
+	//p->Vsp = 50000;
 
-	float Ioutsp = 0.0f;
+	PhaseMode_t newmode = PhaseMode_CIV;
 
-
-	static float vsp = 42000.0f;
-
-
-	if((p->Vlow*1.17f) > vsp){
-		EMA(vsp,(p->Vlow*1.17f),0.99f);
-	}else{
-		EMA(vsp,p->Vsp,0.99f);
+	//Limit low boost factor.
+	volatile float vsp = p->Vsp;
+	if (vsp < (p->Vlow*1.05)){
+		vsp = (p->Vlow*1.05);
+		p->mode = PhaseMode_MinInputVoltage;
 	}
 
-	Ioutsp = 0.5f * settings.Klim * settings.Chigh *(vsp - p->Vhigh)/(Ts) + p->Ihigh;
+	volatile float Ioutsp = HW_KLIM_VOUT*HW_CHIGH*(vsp - p->Vhigh_pred)/(Ts);
+	volatile float Isp = Ioutsp +p->Ihigh*(vsp/p->Vlow_pred);
 
-	//if(p->Vsp > vsp){
-	//	Ioutsp = 0.7f * settings.Klim * settings.Chigh *(p->Vsp - p->Vhigh)/(Ts) + p->Ihigh;
-	//}
-	//else{
-	//	Ioutsp = 0.7f * settings.Klim * settings.Chigh *(vsp - p->Vhigh)/(Ts) + p->Ihigh;
-	//}
-
-    float Isp = Ioutsp/(1.0f - p->dutycycle);
+    p->Ilimvout = (-0.5f*HW_KLIM*HW_CLOW*(settings.LowSideVoltageLimitSoft - p->Vlow)/Ts) +p->Ilow;
 
 
-    Ilim = -settings.LowSideCurrentMaxLimitSoft;
-    p->Ilimvout = (-0.5f*settings.Klim*settings.Clow*(settings.LowSideVoltageLimitSoft - p->Vlow)/Ts) +p->Ilow;
-    bool Vhighlim = false;
-    if (Ilim < p->Ilimvout){
-    	Vhighlim = true;
-    	//Constand low-side voltage
-    	Ilim = p->Ilimvout;
-    	if(Ilim > 0.0f)Ilim = 0.0f;
+    Ilim = p->Iindlim;
+
+	//Temperature de-rating
+	if (p->TemperatureHeatsink > settings.TemperatureLimitStart){
+		t = (p->TemperatureHeatsink - settings.TemperatureLimitStart)/(settings.TemperatureLimitEnd - settings.TemperatureLimitStart);
+		Ilim = p->Iindlim * (1 - t);
+		if (Ilim > 0){
+			Ilim = 0;
+		}
+		TemperatureLimited = true;
+	}
+
+
+    if (Isp > -settings.LowSideCurrentMinLimitSoft){
+    	Isp = -settings.LowSideCurrentMinLimitSoft;
+    	newmode  = PhaseMode_MinInputCurrent;
+    }
+    if (Isp < -Ilim ){
+		Isp = -Ilim;
+		newmode  = PhaseMode_COC;
+
+	}
+
+    if (Isp < p->Ilimvout){
+    	Isp = p->Ilimvout;
+    	newmode  = PhaseMode_COV;
     }
 
+    if(p->mode == PhaseMode_CIC){
+    		if(TemperatureLimited){
+    			newmode = PhaseMode_TD;
+    		}
+    }
+    p->mode = newmode;
 
-    if(Isp > -settings.LowSideCurrentMinLimitSoft){
-		Isp = -settings.LowSideCurrentMinLimitSoft;
+    //Vn = +p->Vlow_pred - (HW_RLINT * p->Iind_pred) - (HW_KLIM*HW_L*(Isp - p->Iind_pred)/Ts )
+    //		+ Ts/(2*HW_CLOW)*(p->Ilow - p->Iind_pred);
 
-		p->mode = PhaseMode_MinInputCurrent;
-	}
-    else if(Isp < Ilim){
-		Isp = Ilim;
-		if(Vhighlim){
-			p->mode = PhaseMode_COV;
-		}
-		else{
-			p->mode = PhaseMode_COC;
-		}
-	}
-    Vn = p->Vlow + (settings.RLint * p->Iind) - (settings.Klim*settings.L*(Isp - p->Iind)/Ts );
+    Vn = +p->Vlow - (HW_KLIM*HW_L/Ts*(Isp - p->Iind));
 
-    //Ilim = Isp;
 #endif
 
 	float Dn = Vn / p->Vhigh_pred;
@@ -360,19 +375,30 @@ void control_controlloop(ConverterPhase_t* p){
 	}
 
 	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
 
 
 	//Do Lower priority duties now.
 
 	//Calculate converter input and output currents
 	//p->Power = (p->Ihigh*p->Vhigh)*1.0e-6f;
-	p->Power = (p->Ilow*p->Vlow)*1.0e-6f;
 
-	if(p->Power){
-		//p->eff = (p->Power)/(p->Ilow*p->Vlow*1.0e-6f);
-		p->eff = ((p->Ihigh*p->Vhigh)*1.0e-6f)/(p->Power);
+
+	p->PowerLow = (p->Ilow*p->Vlow)*1.0e-6f;
+	p->PowerHigh = (p->Ihigh*p->Vhigh)*1.0e-6f;
+
+
+	if(p->PowerHigh && p->PowerLow){
+#ifdef HW_TOPOLOGY_BOOST
+		p->eff = p->PowerHigh/p->PowerLow;
+#elif defined HW_TOPOLOGY_BUCK
+		p->eff = p->PowerLow/p->PowerHigh;
+#endif
 	}else{
-		p->eff = 0;
+		p->eff = 1.0f;
 	}
 
 	EMA(meter.Iind, p->Iind*0.001f,settings.meterfilterCoeficient);
@@ -383,7 +409,19 @@ void control_controlloop(ConverterPhase_t* p){
 	EMA(meter.Eff, p->eff,settings.meterfilterCoeficient);
 	EMA(meter.TemperatureAmbient, p->TemperatureAmbient,settings.meterfilterCoeficient);
 	EMA(meter.TemperatureHeatsink, p->TemperatureHeatsink,settings.meterfilterCoeficient);
-	meter.Power = meter.Vlow*meter.Ilow;
+	EMA(meter.PowerHigh, p->PowerHigh, settings.meterfilterCoeficient);
+	EMA(meter.PowerLow, p->PowerLow, settings.meterfilterCoeficient);
+
+	EMA(meter_slow.Iind, p->Iind*0.001f, SLOW_METER_COEF);
+	EMA(meter_slow.Ihigh, p->Ihigh*0.001f,SLOW_METER_COEF);
+	EMA(meter_slow.Ilow, p->Ilow*0.001f,SLOW_METER_COEF);
+	EMA(meter_slow.Vlow, p->Vlow*0.001f,SLOW_METER_COEF);
+	EMA(meter_slow.Vhigh, p->Vhigh*0.001f,SLOW_METER_COEF);
+	EMA(meter_slow.Eff, p->eff,SLOW_METER_COEF);
+	EMA(meter_slow.TemperatureAmbient, p->TemperatureAmbient,SLOW_METER_COEF);
+	EMA(meter_slow.TemperatureHeatsink, p->TemperatureHeatsink,SLOW_METER_COEF);
+	EMA(meter_slow.PowerHigh, p->PowerHigh, SLOW_METER_COEF);
+	EMA(meter_slow.PowerLow, p->PowerLow, SLOW_METER_COEF);
 
 
 	if(scope.running){
@@ -409,9 +447,13 @@ void control_controlloop(ConverterPhase_t* p){
 				case SourceIndex_Ilow:
 					tempval = p->Ilow / 1.0e3f;
 					break;
-				case SourceIndex_Power:
-					tempval = p->Power;
+				case SourceIndex_PowerHigh:
+					tempval = p->PowerHigh;
 					break;
+				case SourceIndex_PowerLow:
+					tempval = p->PowerLow;
+					break;
+
 				case SourceIndex_Eff:
 					tempval = p->eff;
 					break;
@@ -430,9 +472,13 @@ void control_controlloop(ConverterPhase_t* p){
 				case SourceIndex_Ilow_Filtered:
 					tempval = meter.Ilow;
 					break;
-				case SourceIndex_Power_Filtered:
-					tempval = meter.Power;
+				case SourceIndex_PowerHigh_Filtered:
+					tempval = meter.PowerHigh;
 					break;
+				case SourceIndex_PowerLow_Filtered:
+					tempval = meter.PowerLow;
+					break;
+
 				case SourceIndex_Eff_Filtered:
 					tempval = meter.Eff;
 					break;
@@ -459,13 +505,22 @@ void control_controlloop(ConverterPhase_t* p){
 		}
 	}
 
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
+
 #ifdef SIMULATION
-#define STEPS 2
-	for (int step = 0; step < STEPS; step++){
-		modTestingSimstep(&simstate, Ts/STEPS, &phase);
-	}
+	simstate_c = modTestingSimstep(Ts, &phase);
+
+
+
 
 #endif
+	//LED3_GPIO_Port->BRR = LED3_Pin;
+	//LED3_GPIO_Port->BSRR = LED3_Pin;
+
 }
 
 bool control_check_parameters(ConverterSettings_t* s, CalibrationData_t * c){
@@ -564,7 +619,7 @@ void control_convert_vls(uint32_t raw){
 	float V = 0;
 
 	#ifdef SIMULATION
-	V = 1.0e3f*(simstate.Vlow + noise(0.05f));
+	V = 1.0e3f*(simstate_c.Vlow + noise(0.05f));
 	#else
 	V = ((((float)raw) * cal.InputVoltageGain * HW_ADCREF) / (float)0x1000) + cal.InputVoltageOffset;
 	#endif
@@ -581,7 +636,7 @@ void control_convert_vls(uint32_t raw){
 void control_convert_vhs(uint32_t raw){
 	float V = 0.0;
 	#ifdef SIMULATION
-	V = 1.0e3f*(simstate.Vhigh + noise(0.05f));
+	V = 1.0e3f*(simstate_c.Vhigh + noise(0.05f));
 	#else
 	V = ((((float)raw) * cal.OutputVoltageGain * HW_ADCREF) / (float)0x1000) + cal.OutputVoltageOffset;
 	#endif
@@ -596,7 +651,7 @@ void control_convert_vhs(uint32_t raw){
 void control_convert_iind(uint32_t raw){
 	float I = 0.0;
 	#ifdef SIMULATION
-	I = 1.0e3f*(simstate.Iind + noise(0.05f));
+	I = 1.0e3f*(simstate_c.Iind + noise(0.05f));
 	#else
 	I = ((((float)raw-(float)0x800) * cal.InputCurrentGain *2.0f* HW_ADCREF) / (float)0x1000) + cal.InputCurrentOffset;
 	#endif
@@ -607,19 +662,26 @@ void control_convert_iind(uint32_t raw){
 		phase.fault = Converter_InputUnderCurrent;
 	}
 
+	phase.Iind = I;
 
-	EMA(phase.Iind,I, CURRENT_IN_FORGETING_FACTOR);
+	//EMA(phase.Iind,I, CURRENT_IN_FORGETING_FACTOR);
 }
 
 void control_convert_ihs(uint32_t raw){
 	float I = 0.0f;
 	#ifdef SIMULATION
-	I = 1.0e3f*(simstate.Ihigh + noise(0.05f));
+	I = 1.0e3f*(simstate_c.Ihigh + noise(0.05f));
 	#else
 	I = ( ((float)raw-(float)0x800) * cal.OutputCurrentGain *2.0f* (HW_ADCREF / (float)0x1000)) + cal.OutputCurrentOffset;
 	#endif
-	if(I > HW_LIMIT_HS_CURRENT_HARD){
-		phase.fault = Converter_OutputOverCurrent;
+
+	if (settings.DisableHighSideCurrentFault == false){
+		if(I > HW_LIMIT_HS_CURRENT_HARD){
+			phase.fault = Converter_OutputOverCurrent;
+		}
+		if(I < -HW_LIMIT_HS_CURRENT_HARD){
+			phase.fault = Converter_OutputOverCurrent;
+		}
 	}
 	EMA(phase.Ihigh,I, CURRENT_IN_FORGETING_FACTOR);
 }

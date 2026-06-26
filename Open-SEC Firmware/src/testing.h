@@ -19,10 +19,7 @@
 
 #include "control.h"
 
-#define NSTATES 3
-#define INPUTS 2
-
-//float state[NSTATES];
+#define SIM_STEPS 2
 
 typedef struct{
 	float Vlow;
@@ -30,8 +27,6 @@ typedef struct{
 	float Iind;
 	float Ihigh;
 }modTestingSimState_t;
-
-modTestingSimState_t simstate;
 
 typedef enum tests{
 	test_nominal,
@@ -51,6 +46,6 @@ void modTestingTask(void);
 
 void modTestingModel(float* x, float* dx, float*u);
 
-void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* phase);
+modTestingSimState_t modTestingSimstep(float dt, ConverterPhase_t* phase);
 
 #endif /* INC_MODTESTING_H_ */

@@ -1,0 +1,4 @@
+../src/hardware/hardware.c:19:6:hw_setio_output	32	static
+../src/hardware/hardware.c:27:6:hw_setio_input	32	static
+../src/hardware/hardware.c:35:6:hw_setio_af	32	static
+../src/hardware/hardware.c:45:6:hw_setio_analog	32	static

@@ -1,0 +1,8 @@
+C:/Users/Tjitte van der Ploeg/OneDrive - TPEE/Documents/TPEE/Tools/OpenSmartEnergyConverter/Open-SEC Firmware/Drivers/CMSIS/Include/core_cm4.h:1933:34:__NVIC_SystemReset	0	static,ignoring_inline_asm
+../src/commands.c:20:6:modCommandsInit	0	static
+../src/commands.c:26:6:modCommandsSetSendFunction	0	static
+../src/commands.c:30:6:modCommandsSendPacket	0	static
+../src/commands.c:36:6:modCommandsProcessPacket	72	static
+../src/commands.c:516:6:modCommandsPrintf	16	static
+../src/commands.c:532:6:modCommandsJumpToMainApplication	8	static
+../src/commands.c:536:6:modCommandsSendSweep	40	static

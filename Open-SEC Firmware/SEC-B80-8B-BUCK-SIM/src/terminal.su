@@ -1,0 +1,2 @@
+../src/terminal.c:33:6:terminal_process_string	288	static,ignoring_inline_asm
+../src/terminal.c:157:6:terminal_register_command_callback	48	static

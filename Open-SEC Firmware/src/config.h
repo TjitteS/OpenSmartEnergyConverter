@@ -25,7 +25,6 @@
 #include "can.h"
 #include "eeprom.h"
 
-//#define hallo RX_CAN_FRAMES_SIZE
 
 typedef struct {
 	//This structure represents the data structure of the full configuration settings.

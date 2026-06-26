@@ -1,0 +1,2 @@
+terminal.c:33:6:terminal_process_string	27
+terminal.c:157:6:terminal_register_command_callback	6

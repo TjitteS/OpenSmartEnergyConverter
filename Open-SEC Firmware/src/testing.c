@@ -49,8 +49,10 @@ uint32_t lastTestTick = 0;
 modTestingSolarCell_t cell;
 uint32_t timestep = 0;
 
-//extern ConverterSettings_t settings;
-//extern CalibrationData_t cal;
+modTestingSimState_t simstate;
+modTestingSimState_t simstate_next;
+float dt;
+int steps = 4;
 
 bool curvestate;
 
@@ -91,18 +93,33 @@ void modTestingInit(const ConverterSettings_t* s){
 
 
 #elif defined(HW_TOPOLOGY_BUCK)
+	float Isc = s->LowSideCurrentMaxLimitSoft / 4.0f /1e3;
 
-	modTestingPVInit(&cell, 70*0.649f, 70*0.742f, 1.3f, 1.5f, 1000);
-	Vbat = config.settings.LowSideVoltageLimitSoft * 0.8;
-	simstate.Vlow=Vbat;
-	simstate.Vhigh=60.0f;
+	//float Isc = 6.0f;
+	//Vbat = 80.0f *0.8;
+
+	float Voc = s->HighSideVoltageLimitSoft *0.8/1e3;
+#ifdef SIM_NOMINAL
+	Vbat = Voc /3;
+#elif defined SIM_BATTERY_DISCONECT
+	Vbat = s->LowSideVoltageLimitSoft*1.1e-3;
 #endif
 
-	simstate.Iind = 0;
-	simstate.Ihigh = 0;
+	ncell = Voc / 0.742f;
+
+	modTestingPVInit(&cell, 0.649f, 0.742f, 6.5f, 6.7f, 1000 / 6.7 * Isc);
+
+
+	simstate_next.Vlow=Vbat;
+	simstate_next.Vhigh=Voc;
+#endif
+
+	simstate_next.Iind = 0;
+	simstate_next.Ihigh = 0;
 	W0 = 1000;
 	W1 = 1000;
 	mpp = getMpp( (float*)IVc2 );
+
 }
 
 
@@ -154,7 +171,7 @@ float IpvPanel(float* IVc, float V){
 
 }
 
-void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* phase){
+void modTestingSimSubstep(modTestingSimState_t* state, ConverterPhase_t* phase, float dt){
 	float Ilow = 0.0;
 #ifdef HW_TOPOLOGY_BOOST
 #ifdef SIM_NOMINAL
@@ -178,15 +195,15 @@ void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* 
 
 #elif defined HW_TOPOLOGY_BUCK
 #ifdef SIM_NOMINAL
-	Ilow = ((Vbat - state->Vlow) / 0.100f) - (state->Vlow / 1.0e4f);
-	state->Ihigh = -Ipvmodel(&cell,state->Vhigh);
+	Ilow = ((Vbat - state->Vlow) / 0.100f);
+	state->Ihigh = -Ipvmodel(&cell,state->Vhigh, 1000.0f, ncell);
 #elif defined SIM_BATTERY_DISCONECT
-	Ilow = -state->Vlow / 1.0e4f;
-	state->Ihigh = (state->Vhigh - 70.0f) / 8.0f;
+	Ilow = -state->Vlow/5000;
+	state->Ihigh = -Ipvmodel(&cell,state->Vhigh, 1000.0f, ncell);
 #endif
 #endif
 
-	float Dn = 1.0f-phase->dutycycle;
+	volatile float Dn = 1.0f-phase->dutycycle;
 
 	if(Dn > 1.0f)Dn = 1.0f;
 	if(Dn < 0.0f)Dn = 0.0f;
@@ -196,13 +213,13 @@ void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* 
 	float dIinddt 	= 0;
 	float dVhighdt 	= 0;
 
-	if(phase->enabled){
+	if(phase->enabled && phase->pwm_enabled){
 		dVlowdt 	= (Ilow - state->Iind)/HW_CLOW*dt;
 		dIinddt 	= (state->Vlow -(Dn*state->Vhigh))/HW_L*dt;
 		dVhighdt = ((state->Iind*Dn)-state->Ihigh-(0.3f/state->Vhigh))/HW_CHIGH*dt;
 	}else{
 
-		dVlowdt 	= (Ilow - state->Iind)/HW_CLOW*dt;
+		dVlowdt 	= (Ilow)/HW_CLOW*dt;
 		dIinddt 	= -state->Iind;
 		dVhighdt = (-state->Ihigh-(0.3f/state->Vhigh))/HW_CHIGH*dt;
 
@@ -229,4 +246,15 @@ void modTestingSimstep(modTestingSimState_t *state, float dt, ConverterPhase_t* 
 	runtime += dt;
 	lossedPowerAverage = lossedEnergy/runtime;
 	timestep++;
+}
+
+modTestingSimState_t modTestingSimstep(float dt, ConverterPhase_t* phase){
+
+	simstate = simstate_next;
+	for(int i = 0; i < steps; i++){
+		modTestingSimSubstep(&simstate_next, phase, dt/steps);
+	}
+
+	return simstate;
+
 }

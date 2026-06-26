@@ -1,0 +1,8 @@
+../src/config.c:52:6:modConfigStoreConfig	8	static,ignoring_inline_asm
+../src/config.c:60:6:modConfigLoadConfig	8	static
+../src/config.c:67:6:modConfigSetConfig	16	static
+../src/config.c:73:6:modConfigStoreAndLoadDefaultConfig	24	static,ignoring_inline_asm
+../src/config.c:79:6:modConfigStoreDefaultConfig	0	static
+../src/config.c:85:6:modConfigLoadDefaultConfig	24	static
+../src/config.c:92:6:modConfigLimitSettings	16	static
+../src/config.c:27:14:modConfigInit	16	static,ignoring_inline_asm

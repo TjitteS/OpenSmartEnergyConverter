@@ -1,0 +1,6 @@
+../src/mppt.c:51:6:modMPPTinit	8	static
+../src/mppt.c:169:7:randomf	16	static
+../src/mppt.c:174:6:modMPPTPerturbAndObserve	40	static
+../src/mppt.c:69:6:modMPPTtask	32	static
+../src/mppt.c:282:6:modMpptStartSweep	0	static
+../src/mppt.c:302:6:modMpptSetMode	0	static

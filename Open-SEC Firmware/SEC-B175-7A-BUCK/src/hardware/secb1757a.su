@@ -1,0 +1,2 @@
+../src/hardware/secb1757a.c:92:6:hw_io_init	16	static
+../src/hardware/secb1757a.c:141:6:hw_adc_init	64	static

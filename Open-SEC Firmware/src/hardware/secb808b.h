@@ -22,7 +22,7 @@
 #define HW_NAME "SEC-B80-8B"
 #endif
 
-#define HW_TOPOLOGY_BOOST
+//#define HW_TOPOLOGY_BOOST
 
 
 #define HW_HAS_IOUT_SENSOR
@@ -63,8 +63,17 @@
 #define HW_RLINT               5e-3f
 
 #define HW_Q                   0.8f
+
+#ifdef HW_TOPOLOGY_BOOST
 #define HW_KLIM                0.9f
 #define HW_KLIM_VOUT           0.4f
+#elif defined HW_TOPOLOGY_BUCK
+#define HW_KLIM                0.9f
+#define HW_KLIM_VOUT           0.4f
+//#define CURRENT_IN_FORGETING_FACTOR     0.75f
+#endif
+
+
 #define HW_IOUT_MAXDUTY        0.7f
 #define HW_CONTROLLERFREQUENCY 20
 #define HW_delay			   30e-6f

@@ -1,0 +1,15 @@
+../src/can.c:26:10:modGetCanGetID	16	static
+../src/can.c:64:6:modCANinit	104	static
+../src/can.c:175:6:HAL_FDCAN_RxFifo0Callback	24	static
+../src/can.c:189:6:modCanHandleRxMsg	40	static
+../src/can.c:418:10:modCANGetCANEXID	0	static
+../src/can.c:433:10:modCANGetCANID	0	static
+../src/can.c:448:6:modCANTransmit	72	static
+../src/can.c:341:6:modCANtask	120	static
+../src/can.c:476:6:modCANTransmitStandardID	48	static
+../src/can.c:504:6:modCANTransmitExtID	48	static
+../src/can.c:536:6:modCANSendBuffer	104	static
+../src/can.c:598:6:modCANSendPacketWrapper	0	static
+../src/can.c:602:6:FDCAN2_IT0_IRQHandler	0	static
+../src/can.c:608:6:FDCAN2_IT1_IRQHandler	0	static
+../src/can.c:614:6:modCANSendSweep	88	static

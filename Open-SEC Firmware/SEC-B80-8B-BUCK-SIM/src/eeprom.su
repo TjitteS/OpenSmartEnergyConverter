@@ -1,0 +1,4 @@
+../src/eeprom.c:29:6:eeprom_init	16	static
+../src/eeprom.c:45:6:eeprom_valid	16	static
+../src/eeprom.c:54:6:eeprom_load	8	static
+../src/eeprom.c:58:6:eeprom_save	40	static,ignoring_inline_asm

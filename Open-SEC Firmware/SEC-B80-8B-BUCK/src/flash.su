@@ -1,0 +1,6 @@
+../src/flash.c:21:10:modFlashEraseNewAppData	40	static,ignoring_inline_asm
+../src/flash.c:69:10:modFlashEraseMainAppData	48	static,ignoring_inline_asm
+../src/flash.c:127:10:modFlashWriteNewAppData	24	static
+../src/flash.c:168:10:modFlashCopyNewAppToMainApp	16	static
+../src/flash.c:197:6:modFlashJumpToBootloader	8	static,ignoring_inline_asm
+../src/flash.c:235:6:modFlashJumpToMainApplication	0	static,ignoring_inline_asm

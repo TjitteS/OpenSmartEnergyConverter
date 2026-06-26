@@ -65,6 +65,7 @@ modConfig_t defaultConvig = {
 				.outputEnable 					=  false,	// Bool
 				.outputEnalbeOnStartup			=  true,	// Bool
 				.startupDelay                 	=  0,		// ms
+				.DisableHighSideCurrentFault    =  false,	// Bool
 		},
 		.mpptsettings = (modMPPTsettings_t){
 				.PO_Stepsize					=  100.0f,	// mV

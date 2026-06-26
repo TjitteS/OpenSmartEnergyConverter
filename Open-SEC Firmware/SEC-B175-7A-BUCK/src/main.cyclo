@@ -1,0 +1,15 @@
+main.c:40:6:main_init_after_config	1
+main.c:85:6:system_clock_config	4
+main.c:47:5:main	1
+main.c:132:6:HAL_MspInit	1
+main.c:158:6:main_halt_risky	1
+main.c:165:6:Error_Handler	1
+main.c:169:6:NMI_Handler	1
+main.c:173:6:HardFault_Handler	1
+main.c:179:6:MemManage_Handler	1
+main.c:186:6:BusFault_Handler	1
+main.c:193:6:UsageFault_Handler	1
+main.c:200:6:SVC_Handler	1
+main.c:204:6:DebugMon_Handler	1
+main.c:208:6:PendSV_Handler	1
+main.c:212:6:SysTick_Handler	1

@@ -187,6 +187,7 @@ void modMPPTPerturbAndObserve(){
 		return;
 	case PhaseMode_TD:
 	case PhaseMode_CIC:
+	case PhaseMode_MinInputVoltage:
 		Vsp += modMpptsettings->PO_Stepsize;
 		control_set_setpoint(Vsp);
 		pv = v;

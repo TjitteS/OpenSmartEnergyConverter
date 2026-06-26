@@ -35,6 +35,7 @@ typedef enum PhaseMode_t{
 	PhaseMode_COV,
 	PhaseMode_COC,
 	PhaseMode_TD, //Temperature De-rating
+	PhaseMode_MinInputVoltage,
 	PhaseMode_Fault,
 }PhaseMode_t;
 
@@ -63,7 +64,8 @@ typedef struct ConverterPhase_t{
 	float TemperatureMCU;
 
 	//Inferred measurements
-	float Power;
+	float PowerHigh;
+	float PowerLow;
 	float eff;
 
 	//Controller state information
@@ -167,6 +169,7 @@ typedef struct ConverterSettings_t {
 
 	bool outputEnalbeOnStartup;
 	uint32_t startupDelay;
+	bool DisableHighSideCurrentFault;
 
 }ConverterSettings_t;
 
@@ -182,7 +185,8 @@ typedef struct{
 
 	//Invered measurements
 	float Ilow;
-	float Power;
+	float PowerHigh;
+	float PowerLow;
 	float Eff;
 }ConverterMueasurements_t;
 
@@ -193,14 +197,16 @@ typedef enum{
 	SourceIndex_Vlow,
 	SourceIndex_Vhigh,
 	SourceIndex_Ilow,
-	SourceIndex_Power,
+	SourceIndex_PowerHigh,
+	SourceIndex_PowerLow,
 	SourceIndex_Eff,
 	SourceIndex_Iind_Filtered,
 	SourceIndex_Ihigh_Filtered,
 	SourceIndex_Vlow_Filtered,
 	SourceIndex_Vhigh_Filtered,
 	SourceIndex_Ilow_Filtered,
-	SourceIndex_Power_Filtered,
+	SourceIndex_PowerHigh_Filtered,
+	SourceIndex_PowerLow_Filtered,
 	SourceIndex_Eff_Filtered,
 
 }ConverterScopeSourceIndex_t;

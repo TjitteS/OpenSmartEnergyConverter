@@ -1,0 +1,4 @@
+../src/packet.c:37:6:libPacketInit	0	static
+../src/packet.c:43:6:libPacketSendPacket	24	static
+../src/packet.c:75:6:libPacketTimerFunc	0	static
+../src/packet.c:85:6:libPacketProcessByte	32	static

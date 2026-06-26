@@ -27,7 +27,10 @@
 #define HW_NAME "SEC-B175-7A"
 #endif
 
+#ifndef HW_TOPOLOGY_BUCK
 #define HW_TOPOLOGY_BOOST
+#endif
+
 
 #define HW_HAS_IOUT_SENSOR
 #define HW_HAS_UART
@@ -71,6 +74,7 @@
 #define HW_CLOW                220.0e-6f
 #define HW_CHIGH               440.0e-6f
 
+#ifdef HW_TOPOLOGY_BOOST
 #define HW_Q                   0.5f
 #define HW_KLIM                0.8f
 #define HW_KLIM_VOUT           0.4f
@@ -78,6 +82,15 @@
 #define HW_CONTROLLERFREQUENCY 20
 #define HW_delay			   45e-6
 #define HW_IOUT_EN_HYST		   800 //mA
+#elif defined HW_TOPOLOGY_BUCK
+#define HW_Q                   0.5f
+#define HW_KLIM                0.7f
+#define HW_KLIM_VOUT           0.3f
+#define HW_IOUT_MAXDUTY        0.7f
+#define HW_CONTROLLERFREQUENCY 20
+#define HW_delay			   45e-6
+#define HW_IOUT_EN_HYST		   800 //mA
+#endif
 
 //Pinout
 #define LED0_Pin 			GPIO_PIN_15

@@ -21,7 +21,7 @@ uint8_t modCANRxBufferLastID;
 uint8_t modCANRxBuffer[RX_CAN_BUFFER_SIZE];
 
 extern ConverterPhase_t phase;
-extern ConverterMueasurements_t meter;
+extern ConverterMueasurements_t meter_slow;
 
 uint16_t modGetCanGetID() {
 	uint16_t id = 0;
@@ -392,8 +392,8 @@ void modCANtask(void) {
 		buffer_append_uint8(data, (uint8_t) phase.mode, &index);
 		buffer_append_uint8(data, (uint8_t) phase.fault, &index);
 		buffer_append_uint8(data, (uint8_t) phase.enabled, &index);
-		buffer_append_int8(data, (int8_t) meter.TemperatureAmbient, &index);
-		buffer_append_int8(data, (int8_t) meter.TemperatureHeatsink, &index);
+		buffer_append_int8(data, (int8_t) meter_slow.TemperatureAmbient, &index);
+		buffer_append_int8(data, (int8_t) meter_slow.TemperatureHeatsink, &index);
 
 		modCANTransmitStandardID(modCANGetCANID(canid, CAN_PACKET_status), data,
 				(uint32_t) index);
@@ -405,10 +405,10 @@ void modCANtask(void) {
 		uint8_t data[8];
 		int32_t index = 0;
 
-		buffer_append_float16(data, meter.Vlow, 1e2f, &index);
-		buffer_append_float16(data, meter.Iind, 2.0e3f, &index);
-		buffer_append_float16(data, meter.Vhigh, 1e2f, &index);
-		buffer_append_float16(data, meter.Ihigh, 2.0e3f, &index);
+		buffer_append_float16(data, meter_slow.Vlow, 1e2f, &index);
+		buffer_append_float16(data, meter_slow.Iind, 2.0e3f, &index);
+		buffer_append_float16(data, meter_slow.Vhigh, 1e2f, &index);
+		buffer_append_float16(data, meter_slow.Ihigh, 2.0e3f, &index);
 
 		modCANTransmitStandardID(modCANGetCANID(canid, CAN_PACKET_Power), data,
 				(uint32_t) index);
